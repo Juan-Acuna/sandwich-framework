@@ -12,3 +12,7 @@ Este framework contiene lo necesario para desarrollar un bot basico pero útil, 
 
 ## Instrucciones de implementación
 [...]
+
+
+## Ejemplo de bot desarrollado con Sandwich Framework
+Un ejemplo de bot desarrollado con este framework es el bot multiuso llamado [Jax Sandwich](https://github.com/Juan-Acuna/jax-sndwch-bot)
