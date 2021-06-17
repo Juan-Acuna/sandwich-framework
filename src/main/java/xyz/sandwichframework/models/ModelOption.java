@@ -2,8 +2,8 @@ package xyz.sandwichframework.models;
 
 import java.util.HashMap;
 
-import xyz.sandwichframework.core.LanguageHandler;
 import xyz.sandwichframework.core.util.Language;
+import xyz.sandwichframework.core.util.LanguageHandler;
 /**
  * Representa una Opción.
  * Represents an Option.
@@ -48,7 +48,9 @@ public class ModelOption implements Comparable<ModelOption>{
 		if(name.containsKey(LanguageHandler.getLanguageParent(lang))) {
 			return name.get(LanguageHandler.getLanguageParent(lang));
 		}
-		return name.get(LanguageHandler.findBestLanguage(lang, (Language[])name.keySet().toArray()));
+		Language[] langs = new Language[name.size()];
+		name.keySet().toArray(langs);
+		return name.get(LanguageHandler.findBestLanguage(lang, langs));
 	}
 	public void setName(Language lang, String name) {
 		this.name.put(lang, name);
@@ -60,7 +62,9 @@ public class ModelOption implements Comparable<ModelOption>{
 		if(desc.containsKey(LanguageHandler.getLanguageParent(lang))) {
 			return desc.get(LanguageHandler.getLanguageParent(lang));
 		}
-		return desc.get(LanguageHandler.findBestLanguage(lang, (Language[])desc.keySet().toArray()));
+		Language[] langs = new Language[desc.size()];
+		desc.keySet().toArray(langs);
+		return desc.get(LanguageHandler.findBestLanguage(lang, langs));
 	}
 	public void setDesc(Language lang, String desc) {
 		this.desc.put(lang, desc);
@@ -72,7 +76,9 @@ public class ModelOption implements Comparable<ModelOption>{
 		if(alias.containsKey(LanguageHandler.getLanguageParent(lang))) {
 			return alias.get(LanguageHandler.getLanguageParent(lang));
 		}
-		return alias.get(LanguageHandler.findBestLanguage(lang, (Language[])alias.keySet().toArray()));
+		Language[] langs = new Language[alias.size()];
+		alias.keySet().toArray(langs);
+		return alias.get(LanguageHandler.findBestLanguage(lang, langs));
 	}
 	public void setAlias(Language lang, String[] alias) {
 		this.alias.put(lang, alias);

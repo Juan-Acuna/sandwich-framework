@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-import xyz.sandwichframework.core.LanguageHandler;
 import xyz.sandwichframework.core.util.Language;
+import xyz.sandwichframework.core.util.LanguageHandler;
 /**
  * Representa un Comando.
  * Represents a Command.
@@ -81,7 +81,9 @@ public class ModelCommand implements Comparable<ModelCommand>{
 		if(name.containsKey(LanguageHandler.getLanguageParent(lang))) {
 			return name.get(LanguageHandler.getLanguageParent(lang));
 		}
-		return name.get(LanguageHandler.findBestLanguage(lang, (Language[])name.keySet().toArray()));
+		Language[] langs = new Language[name.size()];
+		name.keySet().toArray(langs);
+		return name.get(LanguageHandler.findBestLanguage(lang, langs));
 	}
 	public void setName(Language lang, String name) {
 		this.name.put(lang, name);
@@ -93,7 +95,9 @@ public class ModelCommand implements Comparable<ModelCommand>{
 		if(desc.containsKey(LanguageHandler.getLanguageParent(lang))) {
 			return desc.get(LanguageHandler.getLanguageParent(lang));
 		}
-		return desc.get(LanguageHandler.findBestLanguage(lang, (Language[])desc.keySet().toArray()));
+		Language[] langs = new Language[desc.size()];
+		desc.keySet().toArray(langs);
+		return desc.get(LanguageHandler.findBestLanguage(lang, langs));
 	}
 	public void setDesc(Language lang, String desc) {
 		this.desc.put(lang, desc);
@@ -105,7 +109,9 @@ public class ModelCommand implements Comparable<ModelCommand>{
 		if(alias.containsKey(LanguageHandler.getLanguageParent(lang))) {
 			return alias.get(LanguageHandler.getLanguageParent(lang));
 		}
-		return alias.get(LanguageHandler.findBestLanguage(lang, (Language[])alias.keySet().toArray()));
+		Language[] langs = new Language[alias.size()];
+		alias.keySet().toArray(langs);
+		return alias.get(LanguageHandler.findBestLanguage(lang, langs));
 	}
 	public void setAlias(Language lang, String[] alias) {
 		this.alias.put(lang, alias);
@@ -117,7 +123,9 @@ public class ModelCommand implements Comparable<ModelCommand>{
 		if(parameter.containsKey(LanguageHandler.getLanguageParent(lang))) {
 			return parameter.get(LanguageHandler.getLanguageParent(lang));
 		}
-		return parameter.get(LanguageHandler.findBestLanguage(lang, (Language[])parameter.keySet().toArray()));
+		Language[] langs = new Language[parameter.size()];
+		parameter.keySet().toArray(langs);
+		return parameter.get(LanguageHandler.findBestLanguage(lang, langs));
 	}
 	public void setParameter(Language lang, String parameter) {
 		this.parameter.put(lang, parameter);
@@ -129,7 +137,9 @@ public class ModelCommand implements Comparable<ModelCommand>{
 		if(parameterDesc.containsKey(LanguageHandler.getLanguageParent(lang))) {
 			return parameterDesc.get(LanguageHandler.getLanguageParent(lang));
 		}
-		return parameterDesc.get(LanguageHandler.findBestLanguage(lang, (Language[])parameterDesc.keySet().toArray()));
+		Language[] langs = new Language[parameterDesc.size()];
+		parameterDesc.keySet().toArray(langs);
+		return parameterDesc.get(LanguageHandler.findBestLanguage(lang, langs));
 	}
 	public void setParameterDesc(Language lang, String parameterDesc) {
 		this.parameterDesc.put(lang, parameterDesc);

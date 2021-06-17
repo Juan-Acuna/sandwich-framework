@@ -3,7 +3,7 @@ package xyz.sandwichframework.core.util;
  * Idiomas soportados por el framework.
  * Framework supported languages.
  * @author Juancho
- * @version 1.0
+ * @version 0.5
  */
 public enum Language {
 	EN, 		/* INGLES */

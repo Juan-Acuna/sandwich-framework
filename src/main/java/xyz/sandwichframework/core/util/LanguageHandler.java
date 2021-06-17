@@ -1,14 +1,15 @@
-package xyz.sandwichframework.core;
-
-import xyz.sandwichframework.core.util.Language;
+package xyz.sandwichframework.core.util;
 /**
- * Utilidades de idiomas.
- * Language utilities.
+ * Herramientas para el manejo de idiomas.
+ * Tools for language handling.
  * @author Juancho
- * @version 1.0
+ * @version 1.1
  */
 public class LanguageHandler {
 	public static Language getLanguageParent(Language lang) {
+		if(lang==null) {
+			return null;
+		}
 		switch(lang) {
 			case ES_MX:
 			case ES_ES:
@@ -21,7 +22,8 @@ public class LanguageHandler {
 		}
 	}
 	public static Language findBestLanguage(Language expected, Language[] availables) {
-		
+		if(availables.length<=0)
+			return expected;
 		expected = getLanguageParent(expected);
 		for(Language lang : availables) {
 			if(getLanguageParent(lang)==expected) {
@@ -29,36 +31,6 @@ public class LanguageHandler {
 			}
 		}
 		return availables[0];
-	}
-	public static String DescriptionNotFound(Language lang) {
-		switch(getLanguageParent(lang)) {
-			case ES:
-				return "No se encontró descripción";
-			case EN:
-				return "Description not found";
-			default:
-				return "";
-		}
-	}
-	public static String helpHint(Language lang) {
-		switch(getLanguageParent(lang)) {
-			case ES:
-				return "\nPara saber más sobre este comando, escriba %s%s %sayuda.";
-			case EN:
-				return "\nTo know more about this command, type %s%s %shelp.";
-			default:
-				return "";
-		}
-	}
-	public static String notAvailable(Language lang) {
-		switch(getLanguageParent(lang)) {
-			case ES:
-				return "No disponible";
-			case EN:
-				return "Not available";
-			default:
-				return "";
-		}
 	}
 	public static String specialWords(Language lang, String word) {
 		switch(word.toLowerCase()) {
