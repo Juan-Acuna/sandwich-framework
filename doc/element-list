@@ -1,0 +1,8 @@
+xyz.sandwichframework.annotations
+xyz.sandwichframework.annotations.configure
+xyz.sandwichframework.annotations.text
+xyz.sandwichframework.core
+xyz.sandwichframework.core.util
+xyz.sandwichframework.core.util.defaultvalues
+xyz.sandwichframework.models
+xyz.sandwichframework.models.discord

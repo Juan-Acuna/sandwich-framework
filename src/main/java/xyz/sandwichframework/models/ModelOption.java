@@ -8,7 +8,7 @@ import xyz.sandwichframework.core.util.LanguageHandler;
  * Representa una Opción.
  * Represents an Option.
  * @author Juancho
- * @ver 1.0
+ * @version 1.0
  */
 public class ModelOption implements Comparable<ModelOption>{
 	private String id;

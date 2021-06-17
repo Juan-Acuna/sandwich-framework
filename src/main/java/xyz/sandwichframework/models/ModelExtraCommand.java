@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.entities.MessageChannel;
  * Representa un Comando extra (comandos que se activan por otros comandos a la espera de una respuesta).
  * Represents an Extra command (commands which are activated by others[commands] and wait for an answer).
  * @author Juancho
- * @ver 1.0
+ * @version 1.0
  */
 public class ModelExtraCommand {
 	private static Map<String, ModelExtraCommand> xcont = (Map<String, ModelExtraCommand>) Collections.synchronizedMap(new HashMap<String, ModelExtraCommand>());
