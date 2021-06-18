@@ -90,7 +90,7 @@ public class AutoHelpCommand {
 				}
 			}
 			if(iscmd) {
-				setForCommand(eb,sCmd,actualLang,!cmdPass);
+				eb = setForCommand(eb,sCmd,actualLang,!cmdPass);
 			}else {
 				for(ModelCategory mc : runner.categories) {
 					if(mc.getName(actualLang).equalsIgnoreCase(searchQuery)) {
@@ -108,11 +108,11 @@ public class AutoHelpCommand {
 					}
 				}
 				if(sCat!=null && sCmd!=null) {
-					setForCategory(eb,sCat,actualLang,true,!catPass,actualGuild);
+					eb = setForCategory(eb,sCat,actualLang,true,!catPass,actualGuild);
 				}else if(sCat!=null & sCmd==null) {
-					setForCategory(eb,sCat,actualLang,false,!catPass,actualGuild);
+					eb = setForCategory(eb,sCat,actualLang,false,!catPass,actualGuild);
 				}else {
-					setForCommand(eb,sCmd,actualLang,!cmdPass);
+					eb = setForCommand(eb,sCmd,actualLang,!cmdPass);
 				}
 			}
 		}else {
@@ -140,14 +140,14 @@ public class AutoHelpCommand {
 		}
 		if(eb==null) {
 			eb=new EmbedBuilder();
-			eb.setTitle("NO SE ENCONTRO LA CATEGORIA/COMANDO.");
+			eb.setTitle(Values.value("xyz-sndwch-def-hlp-cat-nf", actualLang));
 		}
 		e.getChannel().sendMessage(eb.build()).queue();
 	}
 	
-	private static void setForCommand(EmbedBuilder eb, ModelCommand cmd, Language lang, boolean pass) {
+	private static EmbedBuilder setForCommand(EmbedBuilder eb, ModelCommand cmd, Language lang, boolean pass) {
 		if(!pass) {
-			return;
+			return null;
 		}
 		eb = new EmbedBuilder();
 		String als = "";
@@ -179,10 +179,11 @@ public class AutoHelpCommand {
 				eb.addField("> " + (option.isEnabled()?"":"*("+Values.value("xyz-sndwch-def-t-na", lang)+")* ~") + runner.optionsPrefix + option.getName(lang) + als2  + (option.isEnabled()?"":"~"), ">>> " + option.getDesc(lang), false);
 			}
 		}
+		return eb;
 	}
-	private static void setForCategory(EmbedBuilder eb, ModelCategory cat, Language lang, boolean duplicated,boolean catPass, ModelGuild guild) {
+	private static EmbedBuilder setForCategory(EmbedBuilder eb, ModelCategory cat, Language lang, boolean duplicated,boolean catPass, ModelGuild guild) {
 		if(!catPass) {
-			return;
+			return null;
 		}
 		eb = new EmbedBuilder();
 		eb.setTitle(Values.formatedValue("xyz-sndwch-def-hlp-cattitle", lang, cat.getName(lang)));/*************************************CAMBIAR**************************************/
@@ -202,6 +203,8 @@ public class AutoHelpCommand {
 				als=" _`[Alias: " + als.substring(1) + "]`_";
 			}
 			eb.addField("> " + (command.isEnabled()?"":"*("+Values.value("xyz-sndwch-def-t-na", lang)+")* ") + command.getName(lang) + als, ">>> " + command.getDesc(lang) + (command.isEnabled()?Values.formatedValue("xyz-sndwch-def-hlp-cmdhint", lang,runner.commandsPrefix, command.getName(lang).toLowerCase()):""),false);
+			System.out.println("fineb:"+eb);
 		}
+	return eb;
 	}
 }

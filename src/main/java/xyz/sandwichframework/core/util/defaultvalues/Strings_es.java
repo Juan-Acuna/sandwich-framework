@@ -38,7 +38,10 @@ public class Strings_es {
 	public static final String H_CMD_OPT = "Parametro: %s";
 
 	@ValueID("xyz-sndwch-def-hlp-dup")
-	public static final String H_DUP = "'%s' tambien hace referencia a un comando, para consultar por este, anteponga '$' para diferenciar de la categoria.";
+	public static final String H_DUP = "```'%s' tambien hace referencia a un comando, para consultar por este, anteponga '$' para diferenciar de la categoria.```";
+
+	@ValueID("xyz-sndwch-def-hlp-cat-nf")
+	public static final String H_CNF = "No se encontró categoría/comando.";
 	
 	@ValueID("xyz-sndwch-def-t-dnf")
 	public static final String T_0 = "No se encontró descripción.";

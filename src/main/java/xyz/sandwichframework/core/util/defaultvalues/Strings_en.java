@@ -38,7 +38,10 @@ public class Strings_en {
 	public static final String H_CMD_OPT = "Parameter: %s";
 
 	@ValueID("xyz-sndwch-def-hlp-dup")
-	public static final String H_DUP = "'%s' also references a command, to get info about the command, type '$' after the command.";
+	public static final String H_DUP = "```'%s' also references a command, to get info about the command, type '$' after the command.```";
+
+	@ValueID("xyz-sndwch-def-hlp-cat-nf")
+	public static final String H_CNF = "Category/command not found.";
 	
 	@ValueID("xyz-sndwch-def-t-dnf")
 	public static final String T_0 = "Description not found";
