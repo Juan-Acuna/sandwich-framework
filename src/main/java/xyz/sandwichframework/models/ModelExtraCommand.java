@@ -2,48 +2,36 @@ package xyz.sandwichframework.models;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import net.dv8tion.jda.api.entities.MessageChannel;
 /**
  * Representa un Comando extra (comandos que se activan por otros comandos a la espera de una respuesta).
  * Represents an Extra command (commands which are activated by others[commands] and wait for an answer).
  * @author Juancho
- * @version 1.0
+ * @version 1.2
  */
-public class ModelExtraCommand {
-	private static Map<String, ModelExtraCommand> xcont = (Map<String, ModelExtraCommand>) Collections.synchronizedMap(new HashMap<String, ModelExtraCommand>());
-	String name;
-	Method action = null;
+public class ModelExtraCommand extends CommandBase implements Comparable<ModelExtraCommand> {
+	private static Map<String, ModelExtraCommand> cont = Collections.synchronizedMap(new HashMap<String, ModelExtraCommand>());
 	Method _each = null;
 	Method _after = null;
 	Method _no = null;
 	Method _finally = null;
-
-	public ModelExtraCommand() {}
-	
-	public ModelExtraCommand(String name, Method action) {
-		this.name = name;
-		this.action = action;
+	public static ModelExtraCommand find(String id) {
+		return cont.get(id.toLowerCase());
 	}
-	
-	public static ModelExtraCommand findByName(String name) {
-		return xcont.get(name);
-	}
-	
-	public static Collection<ModelExtraCommand> getExtraCommandList() {
-		final Collection<ModelExtraCommand> l = xcont.values();
+	public static ArrayList<ModelExtraCommand> getAsList() {
+		ArrayList<ModelExtraCommand> l = new ArrayList<ModelExtraCommand>(cont.values());
+		Collections.sort(l);
 		return l;
 	}
-	
+	public static int getExtraCommandCount() {
+		return cont.size();
+	}
 	public static void compute(ModelExtraCommand xcmd) {
-		ModelExtraCommand m = xcont.get(xcmd.name);
+		ModelExtraCommand m = cont.get(xcmd.id);
 		if(m==null){
-			xcont.put(xcmd.name, xcmd);
+			cont.put(xcmd.id.toLowerCase(), xcmd);
 			m = xcmd;
 		}
 		//System.out.println("comando computado: "+m.getName());
@@ -75,14 +63,16 @@ public class ModelExtraCommand {
 		}*/
 		
 	}
-	public void setName(String name) {
-		this.name=name;
+	
+	public ModelExtraCommand() {
+		super();
 	}
-	public String getName() {
-		return name;
+	public ModelExtraCommand(String id, Method action) {
+		super(id);
+		this.action = action;
 	}
-	public void setAction(Method a) {
-		action=a;
+	public void forceId(String name) {
+		this.id=name;
 	}
 	public void setEach(Method e) {
 		_each=e;
@@ -96,47 +86,52 @@ public class ModelExtraCommand {
 	public void setFinally(Method f) {
 		_finally=f;
 	}
-	public void Run(String command ,MessageChannel channel, String authorId, Object...args) {
+	public void Run(ExtraCmdPacket packet) {
 		try {
-			action.invoke(null, command ,channel, authorId, args);
+			action.invoke(null, packet);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	public void eachRun(MessageChannel channel, Object...args) {
+	public void eachRun(ExtraCmdPacket packet) {
 		if(_each==null)
 			return;
 		try {
-			_each.invoke(null, channel, args);
+			_each.invoke(null, packet);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	public void afterRun(MessageChannel channel, Object...args) {
+	public void afterRun(ExtraCmdPacket packet) {
 		if(_after==null)
 			return;
 		try {
-			_after.invoke(null, channel, args);
+			_after.invoke(null, packet);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	public void NoRun(MessageChannel channel, Object...args) {
+	public void NoRun(ExtraCmdPacket packet) {
 		if(_no==null)
 			return;
 		try {
-			_no.invoke(null, channel, args);
+			_no.invoke(null, packet);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	public void finallyRun(MessageChannel channel, Object...args) {
+	public void finallyRun(ExtraCmdPacket packet) {
 		if(_finally==null)
 			return;
 		try {
-			_finally.invoke(null, channel, args);
+			_finally.invoke(null, packet);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public int compareTo(ModelExtraCommand o) {
+		return id.compareTo(o.id);
 	}
 }

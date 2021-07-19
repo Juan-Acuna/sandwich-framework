@@ -2,7 +2,7 @@ package xyz.sandwichframework.core.util.defaultvalues;
 
 import xyz.sandwichframework.annotations.text.*;
 import xyz.sandwichframework.core.util.Language;
-@Values(Language.ES)
+@ValuesContainer(Language.ES)
 /**
  * Valores por defecto dentro del framework. En este caso: Español.
  * Defaul values inside the framework. In this case: Spanish.

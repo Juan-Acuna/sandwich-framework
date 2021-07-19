@@ -9,29 +9,26 @@ import net.dv8tion.jda.api.entities.Guild;
 import xyz.sandwichframework.core.util.Language;
 import xyz.sandwichframework.models.discord.ModelGuild;
 /**
- * Clase cuyo trabajo es manejar todos los servidores en los que el bot ha sido invitado.
- * Class whic job is manage all the guilds that the bot has been invited.
+ * Clase cuyo trabajo es manejar todos los servidores en los que el bot ha sido invitado.(ex BotGuildsManager)
+ * Class whic job is manage all the guilds that the bot has been invited.(ex BotGuildsManager)
  * @author Juancho
- * @version 0.9
+ * @version 1.0
  */
-public class BotGuildsManager {
-	
-	private static BotGuildsManager _instancia = new BotGuildsManager();
+public class GuildsManager {
+	private Bot bot;
 	private Map<Long, ModelGuild> guilds;
 	
-	private BotGuildsManager() {
+	private GuildsManager(Bot bot) {
 		guilds = Collections.synchronizedMap(new HashMap<Long, ModelGuild>());
+		this.bot=bot;
 	}
-	public static BotGuildsManager getManager() {
-		if(_instancia!=null) {
-			return _instancia;
-		}
-		return _instancia = new BotGuildsManager();
+	public static GuildsManager startSercive(Bot bot) {
+		return new GuildsManager(bot);
 	}
 	public boolean registerGuild(ModelGuild guild) {
 		if(guilds.get(guild.getId())==null) {
 			guilds.put(guild.getId(),guild);
-			System.out.println("G:"+guild.getId()+"|"+guild.getLastKnownName()+"|"+guild.getLanguage());
+			//System.out.println("G:"+guild.getId()+"|"+guild.getLastKnownName()+"|"+guild.getLanguage());
 			return true;
 		}
 		return false;

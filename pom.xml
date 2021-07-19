@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>xyz.sandwichframework</groupId>
   <artifactId>sandwich-framework</artifactId>
-  <version>0.5.0-SNAPSHOT</version>
+  <version>0.6.0-SNAPSHOT</version>
   <name>Sandwich Framework</name>
   <description>Sandwich Framework</description>
   <packaging>jar</packaging> 
@@ -15,7 +15,7 @@
   <dependency>
 		<groupId>net.dv8tion</groupId>
 		<artifactId>JDA</artifactId>
-		<version>4.2.0_227</version>
+		<version>4.3.0_283</version>
 	</dependency>
 	<dependency>
 		<groupId>org.reflections</groupId>
@@ -24,6 +24,11 @@
 	</dependency>
   </dependencies>
   <repositories>
+  <repository>
+	    <id>dv8tion</id>
+	    <name>m2-dv8tion</name>
+	    <url>https://m2.dv8tion.net/releases</url>
+	</repository>
   <repository>
     <id>central</id>
     <name>bintray</name>

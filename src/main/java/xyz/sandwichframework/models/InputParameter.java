@@ -3,11 +3,12 @@ package xyz.sandwichframework.models;
  * Representa la entrada del usuario.
  * Represents the user's input.
  * @author Juancho
- * @version 1.0
+ * @version 1.1
  */
 public class InputParameter {
-	private String key = "none";
-	private String value = "none";
+	private static final String[] TRUE_ARRAY ={"1","s","si","t","tru","true","verdad","verdadero","y","yes"};
+	private String key = null;
+	private String value = null;
 	private InputParamType type;
 	
 	public InputParameter() {
@@ -49,30 +50,32 @@ public class InputParameter {
 		return value;
 	}
 	public int getValueAsInt() {
-		if(value.equals("none")) {
+		if(value==null) {
 			return -1;
 		}
 		return Integer.parseInt((String)value);
 	}
 	public double getValueAsDouble() {
-		if(value.equals("none")) {
+		if(value==null) {
 			return -1;
 		}
 		return Double.parseDouble(value);
 	}
 	public float getValueAsFloat() {
-		if(value.equals("none")) {
+		if(value==null) {
 			return -1f;
 		}
 		return Float.parseFloat(value);
 	}
 	public char getValueAsChar() {
-		if(value.equals("none")) {
+		if(value==null) {
 			return '\0';
 		}
 		return value.charAt(0);
 	}
 	public boolean getValueAsBoolean(String[] standarTrue) {
+		if(value==null)
+			return false;
 		for(String s : standarTrue) {
 			if(value.equals(s)) {
 				return true;
@@ -80,7 +83,19 @@ public class InputParameter {
 		}
 		return false;
 	}
+	public boolean getValueAsBoolean() {
+		if(value==null)
+			return false;
+		for(String s : TRUE_ARRAY) {
+			if(value.equalsIgnoreCase(s)) {
+				return true;
+			}
+		}
+		return false;
+	}
 	public boolean getValueAsBoolean(String textTrue) {
+		if(value==null)
+			return false;
 		if(value.equals(textTrue)){
 			return true;
 		}

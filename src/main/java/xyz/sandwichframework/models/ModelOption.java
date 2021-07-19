@@ -17,15 +17,6 @@ public class ModelOption implements Comparable<ModelOption>{
 	private HashMap<Language, String[]> alias;
 	private boolean enabled = true;
 	private boolean visible;
-	public ModelOption(Language lang, String id, boolean enabled, boolean visible) {
-		this.name = new HashMap<Language, String>();
-		this.desc= new HashMap<Language, String>();
-		this.alias = new HashMap<Language, String[]>();
-		this.id=id;
-		this.name.put(lang, id);
-		this.enabled = enabled;
-		this.visible=visible;
-	}
 	public ModelOption(Language lang, String id, String desc, String[] alias, boolean enabled, boolean visible) {
 		this.name = new HashMap<Language, String>();
 		this.desc= new HashMap<Language, String>();
@@ -37,7 +28,6 @@ public class ModelOption implements Comparable<ModelOption>{
 		this.enabled = enabled;
 		this.visible=visible;
 	}
-	
 	public String getId() {
 		return id;
 	}

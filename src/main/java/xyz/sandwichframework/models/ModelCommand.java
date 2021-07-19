@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 import xyz.sandwichframework.core.util.Language;
 import xyz.sandwichframework.core.util.LanguageHandler;
@@ -11,82 +12,42 @@ import xyz.sandwichframework.core.util.LanguageHandler;
  * Representa un Comando.
  * Represents a Command.
  * @author Juancho
- * @version 1.0
+ * @version 1.1
  */
-public class ModelCommand implements Comparable<ModelCommand>{
-	private String id;
-	private HashMap<Language, String> name;
-	private HashMap<Language, String> desc;
-	private HashMap<Language, String[]> alias;
-	private boolean enabled;
-	private HashMap<Language, String> parameter;
-	private HashMap<Language, String> parameterDesc;
-	private boolean visible;
-	private ArrayList<ModelOption> options;
-	private ModelCategory category;
-	private Method source;
-	public ModelCommand() {
-		this.name=new HashMap<Language, String>();
-		this.desc=new HashMap<Language, String>();
-		this.alias=new HashMap<Language, String[]>();
-		this.options = new ArrayList<ModelOption>();
-		this.parameter = new HashMap<Language, String>();
-		this.parameterDesc = new HashMap<Language, String>();
-		//optionsDesc = new ArrayList<String>();
+public class ModelCommand extends CommandBase implements Comparable<ModelCommand>{
+	private static Map<String, ModelCommand> cont = Collections.synchronizedMap(new HashMap<String, ModelCommand>());
+	protected HashMap<Language, String> desc = null;
+	protected HashMap<Language, String> parameter = null;
+	protected HashMap<Language, String> parameterDesc = null;
+	protected ModelCategory category = null;
+	
+	public static final void compute(ModelCommand command) {
+		cont.put(command.id.toLowerCase(), command);
 	}
-	public ModelCommand(Language lang, String id, ModelCategory category, Method source) {
-		this.name=new HashMap<Language, String>();
-		this.desc=new HashMap<Language, String>();
-		this.alias=new HashMap<Language, String[]>();
-		this.parameter = new HashMap<Language, String>();
-		this.parameterDesc = new HashMap<Language, String>();
-		this.id=id;
-		this.name.put(lang, id);
-		this.category = category;
-		this.source = source;
-		options = new ArrayList<ModelOption>();
-		category.addCommand(this);
-	}
-	public ModelCommand(Language lang,String id, String desc, ModelCategory category, Method source) {
-		this.name=new HashMap<Language, String>();
-		this.desc=new HashMap<Language, String>();
-		this.alias=new HashMap<Language, String[]>();
-		this.parameter = new HashMap<Language, String>();
-		this.parameterDesc = new HashMap<Language, String>();
-		this.id=id;
-		this.name.put(lang, id);
-		this.desc.put(lang, desc);
-		this.category = category;
-		this.source = source;
-		options = new ArrayList<ModelOption>();
-		category.addCommand(this);
+	public static final ModelCommand find(String id) {
+		return cont.get(id.toLowerCase());
 	}
 	
-	public String getId() {
-		return id;
+	public static final ArrayList<ModelCommand> getAsList() {
+		ArrayList<ModelCommand> l = new ArrayList<ModelCommand>(cont.values());
+		Collections.sort(l);
+		return l;
 	}
-	public void setId(String id) {
-		this.id = id;
+	public static final int getCommandCount() {
+		return cont.size();
 	}
-	public boolean isEnabled() {
-		return enabled;
-	}
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-	public String getName(Language lang) {
-		if(name.containsKey(lang)) {
-			return name.get(lang);
-		}
-		if(name.containsKey(LanguageHandler.getLanguageParent(lang))) {
-			return name.get(LanguageHandler.getLanguageParent(lang));
-		}
-		Language[] langs = new Language[name.size()];
-		name.keySet().toArray(langs);
-		return name.get(LanguageHandler.findBestLanguage(lang, langs));
-	}
-	public void setName(Language lang, String name) {
-		this.name.put(lang, name);
+	public ModelCommand(Language lang, String id, ModelCategory category, Method source) {
+		super(id);
+		this.name=new HashMap<Language, String>();
+		this.desc=new HashMap<Language, String>();
+		this.alias=new HashMap<Language, String[]>();
+		this.parameter = new HashMap<Language, String>();
+		this.parameterDesc = new HashMap<Language, String>();
+		this.name.put(lang, id);
+		this.category = category;
+		this.action = source;
+		options = new ArrayList<ModelOption>();
+		category.addCommand(this);
 	}
 	public String getDesc(Language lang) {
 		if(desc.containsKey(lang)) {
@@ -101,20 +62,6 @@ public class ModelCommand implements Comparable<ModelCommand>{
 	}
 	public void setDesc(Language lang, String desc) {
 		this.desc.put(lang, desc);
-	}
-	public String[] getAlias(Language lang) {
-		if(alias.containsKey(lang)) {
-			return alias.get(lang);
-		}
-		if(alias.containsKey(LanguageHandler.getLanguageParent(lang))) {
-			return alias.get(LanguageHandler.getLanguageParent(lang));
-		}
-		Language[] langs = new Language[alias.size()];
-		alias.keySet().toArray(langs);
-		return alias.get(LanguageHandler.findBestLanguage(lang, langs));
-	}
-	public void setAlias(Language lang, String[] alias) {
-		this.alias.put(lang, alias);
 	}
 	public String getParameter(Language lang) {
 		if(parameter.containsKey(lang)) {
@@ -144,29 +91,11 @@ public class ModelCommand implements Comparable<ModelCommand>{
 	public void setParameterDesc(Language lang, String parameterDesc) {
 		this.parameterDesc.put(lang, parameterDesc);
 	}
-	public boolean isVisible() {
-		return visible;
-	}
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-	}
-	public ArrayList<ModelOption> getOptions() {
-		return options;
-	}
-	public void addOption(ModelOption option) {
-		this.options.add(option);
-	}
 	public ModelCategory getCategory() {
 		return category;
 	}
 	public void setCategory(ModelCategory category) {
 		this.category = category;
-	}
-	public Method getSource() {
-		return source;
-	}
-	public void setSource(Method source) {
-		this.source = source;
 	}
 	@Override
 	public int compareTo(ModelCommand arg0) {
@@ -198,5 +127,4 @@ public class ModelCommand implements Comparable<ModelCommand>{
 			return false;
 		return true;
 	}
-	
 }

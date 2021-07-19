@@ -1,41 +1,40 @@
 package xyz.sandwichframework.core;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
-import xyz.sandwichframework.models.InputParameter;
+import xyz.sandwichframework.models.CommandPacket;
 /**
  * Clase que ejecuta los comandos.
  * Class that runs the commands.
  * @author Juancho
- * @version 1.0
+ * @version 1.2
  */
 class CommandRunner implements Runnable{
-
+	/**
+	 * Metodo a ser ejecutado({@link xyz.sandwichframework.models.ModelCommand#getAction()}).
+	 * Method wich will be executed({@link xyz.sandwichframework.models.ModelCommand#getAction()}).
+	 */
 	private Method method;
-	private ArrayList<InputParameter> parameters;
-	private MessageReceivedEvent msg;
-	
-	protected CommandRunner(Method method, ArrayList<InputParameter> parameters,MessageReceivedEvent event) {
-		super();
-		this.method = method;
-		this.parameters = parameters;
-		this.msg=event;
+	/**
+	 * Paquete que se enviará al comando.
+	 * Packet wich will be send to the command.
+	 */
+	private CommandPacket packet;
+	/**
+	 * Constructor de CommandRunner.
+	 * Constructor of CommandRunner.
+	 */
+	protected CommandRunner(Method method, CommandPacket packet) {
+		this.method=method;
+		this.packet=packet;
 	}
-	
-	protected CommandRunner(Method method, ArrayList<InputParameter> parameters,PrivateMessageReceivedEvent event) {
-		super();
-		this.method = method;
-		this.parameters = parameters;
-		this.msg = new MessageReceivedEvent(event.getJDA(), event.getResponseNumber(), event.getMessage());
-	}
-
+	/**
+	 * Heredado de Runnable
+	 * Inherited from Runnable.
+	 */
 	@Override
 	public void run() {
 		try {
-			method.invoke(null, msg, parameters);
+			method.invoke(null, packet);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

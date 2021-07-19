@@ -3,6 +3,7 @@ package xyz.sandwichframework.models;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 import xyz.sandwichframework.core.util.Language;
 import xyz.sandwichframework.core.util.LanguageHandler;
@@ -10,16 +11,36 @@ import xyz.sandwichframework.core.util.LanguageHandler;
  * Representa una Categoría.
  * Represents a Category.
  * @author Juancho
- * @version 1.0
+ * @version 1.1
  */
 public class ModelCategory implements Comparable<ModelCategory>{
+	private static Map<String, ModelCategory> cont = Collections.synchronizedMap(new HashMap<String, ModelCategory>());
 	private String id;
 	private HashMap<Language,String> name;
 	private HashMap<Language,String> desc;
 	private boolean nsfw;
 	private boolean visible;
+	private boolean enabled;
 	private boolean isSpecial;
 	private ArrayList<ModelCommand> commands;
+	
+
+	public static void compute(ModelCategory cat) {
+		cont.put(cat.id.toLowerCase(), cat);
+	}
+	public static ModelCategory find(String id) {
+		return cont.get(id.toLowerCase());
+	}
+	
+	public static ArrayList<ModelCategory> getAsList() {
+		ArrayList<ModelCategory> l = new ArrayList<ModelCategory>(cont.values());
+		Collections.sort(l);
+		return l;
+	}
+	public static int getCommandCount() {
+		return cont.size();
+	}
+	
 	public ModelCategory(Language lang, String id){
 		this.name=new HashMap<Language,String>();
 		this.desc=new HashMap<Language,String>();
@@ -38,9 +59,6 @@ public class ModelCategory implements Comparable<ModelCategory>{
 	
 	public String getId() {
 		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
 	}
 	public String getName(Language lang) {
 		if(name.containsKey(lang)) {
@@ -81,6 +99,12 @@ public class ModelCategory implements Comparable<ModelCategory>{
 	}
 	public void setVisible(boolean visible) {
 		this.visible = visible;
+	}
+	public boolean isEnabled() {
+		return enabled;
+	}
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 	public ArrayList<ModelCommand> getCommands() {
 		return commands;

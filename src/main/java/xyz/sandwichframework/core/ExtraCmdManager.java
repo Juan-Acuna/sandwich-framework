@@ -10,44 +10,94 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import xyz.sandwichframework.models.ExtraCmdPacket;
 import xyz.sandwichframework.models.ModelExtraCommand;
+import xyz.sandwichframework.models.discord.ModelGuild;
 /**
  * Manejador de Comandos extra.
  * Manager of Extra commands.
  * @author Juancho
- * @version 1.0
+ * @version 1.1
  */
 public class ExtraCmdManager {
+	/**
+	 * Constante privada de clase.
+	 * Private constant of class.
+	 */
 	private static final String wildcard = "\\*/";
+	/**
+	 * Constante privada de clase.
+	 * Private constant of class.
+	 */
 	private static final String string_wildcard = wildcard +"{s}";
+	/**
+	 * Constante privada de clase.
+	 * Private constant of class.
+	 */
 	private static final String number_wildcard = wildcard + "{n}";
-	
+	/**
+	 * Constante de clase. Representa un comodín.
+	 * Constant of class. Represents a wildcard.
+	 */
 	public static final String[] WILDCARD = {wildcard};
+	/**
+	 * Constante de clase. Representa un comodín solo para texto sin números.
+	 * Constant of class. Represents a wildcard. Only for text without numbers.
+	 */
 	public static final String[] STRING_WILDCARD = {string_wildcard};
+	/**
+	 * Constante de clase. Representa un comodín solo para números.
+	 * Constant of class. Represents a wildcard. Only for numbers.
+	 */
 	public static final String[] NUMBER_WILDCARD = {number_wildcard};
-	private static Map<MessageChannel, List<ExtraCmdObj>> threads = (Map<MessageChannel, List<ExtraCmdObj>>) Collections.synchronizedMap(new HashMap<MessageChannel, List<ExtraCmdObj>>());
-	private static ExtraCmdManager _instance = new ExtraCmdManager();
-	
-	private ExtraCmdManager() {
-		
+	/**
+	 * Contenedor de {@link ExtraCmdListener}.
+	 * Container of {@link ExtraCmdListener}.
+	 */
+	private static Map<MessageChannel, List<ExtraCmdListener>> threads = (Map<MessageChannel, List<ExtraCmdListener>>) Collections.synchronizedMap(new HashMap<MessageChannel, List<ExtraCmdListener>>());
+	/**
+	 * {@link Bot} asociado a este gestor.
+	 * {@link Bot} associated to this manager.
+	 */
+	private Bot bot;
+	/**
+	 * Constructor de ExtraCmdManager.
+	 * Constructor of ExtraCmdManager.
+	 */
+	private ExtraCmdManager(Bot bot) {
+		this.bot = bot;
 	}
-	
-	public static ExtraCmdManager getManager() {
-		if(_instance!=null) {
-			return _instance;
+	/**
+	 * Inicializa un gestor de comandos extra.
+	 * Initializes an extra commands manager.
+	 */
+	protected static ExtraCmdManager startService(Bot bot) {
+		return new ExtraCmdManager(bot);
+	}
+	/**
+	 * Espera por la ejecución de un comando extra.
+	 * Waits for the execution of an extra command.
+	 */
+	public ExtraCmdListener waitForExtraCmd(String extraCmdName, Message message, String[] spectedValues, int maxSeg, int maxMsg, Object...args) {
+		return waitForExtraCmd(extraCmdName, message.getChannel(),message.getAuthor().getId(),spectedValues,maxSeg,maxMsg,args);
+	}
+	/**
+	 * Espera por la ejecución de un comando extra.
+	 * Waits for the execution of an extra command.
+	 */
+	public ExtraCmdListener waitForExtraCmd(String extraCmdName, MessageChannel channel, String authorId, String[] spectedValues, int maxSeg, int maxMsg, Object...args) {
+		ModelExtraCommand m = ModelExtraCommand.find(extraCmdName);
+		ModelGuild g = null;
+		if(channel.getType()!=ChannelType.PRIVATE) {
+			g = bot.getGuildsManager().getGuild(((TextChannel)channel).getGuild().getIdLong());
 		}
-		return _instance = new ExtraCmdManager();
-	}
-	
-	public ExtraCmdObj registerExtraCmd(String extraCmdName, Message message, String[] spectedValues, int maxSeg, int maxMsg, Object...args) {
-		return registerExtraCmd(extraCmdName, message.getChannel(),message.getAuthor().getId(),spectedValues,maxSeg,maxMsg,args);
-	}
-	public ExtraCmdObj registerExtraCmd(String extraCmdName, MessageChannel channel, String authorId, String[] spectedValues, int maxSeg, int maxMsg, Object...args) {
-		ModelExtraCommand m = pickExtraCommand(extraCmdName);
-		ExtraCmdObj o = new ExtraCmdObj(m, channel, authorId,spectedValues, maxSeg, maxMsg, args);
-		List<ExtraCmdObj> l = threads.get(channel);
+		CommandPacketBuilder cpb = new CommandPacketBuilder(bot, g, channel, authorId);
+		cpb.setArgs(args);
+		ExtraCmdListener o = new ExtraCmdListener(m,cpb, spectedValues, maxSeg, maxMsg);
+		List<ExtraCmdListener> l = threads.get(channel);
 		if(l==null) {
-			l = Collections.synchronizedList(new ArrayList<ExtraCmdObj>());
+			l = Collections.synchronizedList(new ArrayList<ExtraCmdListener>());
 			l.add(o);
 			threads.put(channel, l);
 		}else {
@@ -56,54 +106,88 @@ public class ExtraCmdManager {
 		new Thread(o).start();
 		return o;
 	}
-	
-	public void CheckExtras(Message message) {
+	/**
+	 * Revisa si se llama a algun comando extra.
+	 * Checks if an extra command is called.
+	 */
+	public void CheckExtras(MessageReceivedEvent event) {
 		if(threads.size()<=0)
 			return;
-		if(message.getAuthor().getId().equals(BotRunner._self.jda.getSelfUser().getId()))
+		if(event.getAuthor().getId().equals(bot.getSelfUser().getId()))
 			return;
-		List<ExtraCmdObj> l = threads.get(message.getChannel());
+		List<ExtraCmdListener> l = threads.get(event.getChannel());
 		if(l == null) {
 			return;
 		}
-		for(ExtraCmdObj o : l) {
-			o.PutMessage(message.getContentRaw(),message.getAuthor().getId());
+		for(ExtraCmdListener o : l) {
+			o.PutMessage(event);
 		}
 	}
-	
-	public class ExtraCmdObj implements Runnable{
-
-		Lock lock = new ReentrantLock();
-		public MessageChannel channel;
-		public String authorId = null; // user
+	/**
+	 * Objeto que se encarga de escuchar y ejecutar llamadas a un comando extra.
+	 * Object wich listen an executes calls for an extra command.
+	 */
+	public class ExtraCmdListener implements Runnable{
+		/**
+		 * Arreglo con todas las posibles entradas a las que el ExtraCmdListener debe responder.
+		 * Array with all the inputs which the ExtraCmdListener have to response.
+		 */
 		public String[] spectedValues = null;
+		/**
+		 * Cantidad máxima de mensajes recibidos en espera por la llamada al comando extra antes de abortar.
+		 * Max count of received messages while is waiting for the call for the extra command before abort.
+		 */
 		public int maxMsg = 5;
-		public int maxSeg = 60; // 30
-		public boolean authorOnly = false;
-		private String cmd = null;
+		/**
+		 * Tiempo de espera(en segundos) para la llamada del comando extra.
+		 * Time of wait(in seconds) for a call for the extra command.
+		 */
+		public int maxSeg = 60;
+		/**
+		 * Representa el {@link MessageReceivedEvent} asociado al comando extra.
+		 * Represents the {@link MessageReceivedEvent} associated to the extra command.
+		 */
+		private MessageReceivedEvent event = null;
+		/**
+		 * Representa al objeto del comando extra.
+		 * Represents the extra command object.
+		 */
 		private ModelExtraCommand action;
+		/**
+		 * Contador de mensajes.
+		 * Count of messages.
+		 */
 		private int msgs = 0;
-		private Object[] args = null;
-		private Object[] eachArgs = null;
-		private Object[] afterArgs = null;
-		private Object[] noArgs = null;
-		private Object[] finallyArgs = null;
-		
-		protected ExtraCmdObj() {}
-		protected ExtraCmdObj(ModelExtraCommand action, MessageChannel channel, String authorId, String[] spectedValues, int maxSeg, int maxMsg, Object...args) {
-			this.channel=channel;
-			this.authorId=authorId;
+		/**
+		 * Constructor de {@link ExtraCmdPacket} associado al comando extra.
+		 * Builder of {@link ExtraCmdPacket} associated to the extra command.
+		 */
+		private CommandPacketBuilder builder;
+		/**
+		 * Constructor del {@link ExtraCmdListener}
+		 * Constructor of the {@link ExtraCmdListener}
+		 */
+		protected ExtraCmdListener(ModelExtraCommand action, ExtraCmdPacket packet,String[] spectedValues, int maxSeg, int maxMsg) {
 			this.spectedValues=spectedValues;
 			this.maxSeg=maxSeg;
 			this.maxMsg=maxMsg;
 			this.action = action;
-			this.args=args;
 		}
-		
+		/**
+		 * Constructor del {@link ExtraCmdListener}
+		 * Constructor of the {@link ExtraCmdListener}
+		 */
+		protected ExtraCmdListener(ModelExtraCommand action, CommandPacketBuilder builder,String[] spectedValues, int maxSeg, int maxMsg) {
+			this.spectedValues=spectedValues;
+			this.maxSeg=maxSeg;
+			this.maxMsg=maxMsg;
+			this.action = action;
+			this.builder=builder;
+		}
 		protected ModelExtraCommand getAction() {
 			return action;
 		}
-		protected ExtraCmdObj setAction(ModelExtraCommand action) {
+		protected ExtraCmdListener setAction(ModelExtraCommand action) {
 			this.action = action;
 			return this;
 		}
@@ -112,12 +196,13 @@ public class ExtraCmdManager {
 			float s = 0f;
 			msgs = 0;
 			boolean b = true;
+			ExtraCmdPacket packet = builder.buildExtraPacket();
 			while(maxSeg > s && maxMsg > msgs && b) {
-				action.eachRun(channel, eachArgs);
-				if(Compare(cmd)) {
-					lock.lock();
-					action.Run(cmd, channel, authorId,args);
-					lock.unlock();
+				action.eachRun(packet);
+				if(Compare(event)) {
+					builder.setMessageReceivedEvent(event);
+					packet = builder.buildExtraPacket();
+					action.Run(packet);
 					b = false;
 				}
 				s += 0.5f;
@@ -128,23 +213,23 @@ public class ExtraCmdManager {
 				}
 			}
 			if(!b) {
-				action.afterRun(channel, afterArgs);
+				action.afterRun(packet);
 			}else {
-				action.NoRun(channel, noArgs);
+				action.NoRun(packet);
 			}
-			action.finallyRun(channel, finallyArgs);
-			threads.get(channel).remove(this);
+			action.finallyRun(packet);
+			threads.get(packet.getChannel()).remove(this);
 		}
-		protected void PutMessage(String message, String authorId) {
-			cmd = message;
-			if(this.authorId==null)
+		protected void PutMessage(MessageReceivedEvent event) {
+			this.event=event;
+			if(this.builder.getAuthorId()==null)
 				return;
-			if(this.isAuthorOnly() && !this.authorId.equals(authorId))
+			if(this.isAuthorOnly() && !this.builder.getAuthorId().equals(event.getAuthor().getId()))
 				return;
 			msgs++;
 		}
-		private boolean Compare(String message) {
-			if(message == null) {
+		private boolean Compare(MessageReceivedEvent event) {
+			if(event == null) {
 				return false;
 			}
 			if(spectedValues[0].startsWith(wildcard)) {
@@ -152,57 +237,53 @@ public class ExtraCmdManager {
 				case wildcard:
 					return true;
 				case number_wildcard:
-					return message.matches("[0-9]{1,999}");
+					return event.getMessage().getContentRaw().matches("[0-9]{1,999}");
 				case string_wildcard:
-					return !message.matches("[0-9]{1,999}");
+					return !event.getMessage().getContentRaw().matches("[0-9]{1,999}");
 				}
 			}
 			for(String a : spectedValues) {
-				if(a.equalsIgnoreCase(message)){
+				if(a.equalsIgnoreCase(event.getMessage().getContentRaw())){
 					return true;
 				}
 			}
-			cmd = null;
+			event = null;
 			return false;
 		}
-		public ExtraCmdObj setEachArrgs(Object...args) {
-			this.eachArgs = args;
+		public ExtraCmdListener setEachArrgs(Object...args) {
+			this.builder.setEachArgs(args);
 			return this;
 		}
-		public ExtraCmdObj setAfterArrgs(Object...args) {
-			this.afterArgs = args;
+		public ExtraCmdListener setAfterArrgs(Object...args) {
+			this.builder.setAfterArgs(args);
 			return this;
 		}
-		public ExtraCmdObj setNoExecutedArrgs(Object...args) {
-			this.noArgs = args;
+		public ExtraCmdListener setNoExecutedArrgs(Object...args) {
+			this.builder.setNoArgs(args);
 			return this;
 		}
-		public ExtraCmdObj setFinallyArrgs(Object...args) {
-			this.finallyArgs = args;
+		public ExtraCmdListener setFinallyArrgs(Object...args) {
+			this.builder.setFinallyArgs(args);
 			return this;
 		}
-		public ExtraCmdObj setAuthorOnly(boolean b) {
-			this.authorOnly=b;
+		public ExtraCmdListener setAuthorOnly(boolean b) {
+			this.builder.setAuthorOnly(b);
 			return this;
 		}
-		public ExtraCmdObj asAuthorOnly() {
-			this.authorOnly=true;
+		public ExtraCmdListener asAuthorOnly() {
+			this.builder.setAuthorOnly(true);
 			return this;
 		}
 		public boolean isAuthorOnly() {
-			return this.authorOnly;
+			return this.builder.isAuthorOnly();
 		}
 		@Override
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
-			result = prime * result + getEnclosingInstance().hashCode();
-			result = prime * result + Arrays.deepHashCode(afterArgs);
-			result = prime * result + Arrays.deepHashCode(args);
-			result = prime * result + ((authorId == null) ? 0 : authorId.hashCode());
-			result = prime * result + ((channel == null) ? 0 : channel.getId().hashCode());
-			result = prime * result + Arrays.deepHashCode(eachArgs);
-			result = prime * result + Arrays.deepHashCode(finallyArgs);
+			result = prime * result + Arrays.deepHashCode(builder.getArgs());
+			result = prime * result + ((builder.getAuthorId() == null) ? 0 : builder.getAuthorId().hashCode());
+			result = prime * result + ((builder.getChannel() == null) ? 0 : builder.getChannel().getId().hashCode());
 			result = prime * result + maxMsg;
 			result = prime * result + maxSeg;
 			result = prime * result + Arrays.hashCode(spectedValues);
@@ -216,24 +297,18 @@ public class ExtraCmdManager {
 				return false;
 			if (getClass() != obj.getClass())
 				return false;
-			ExtraCmdObj other = (ExtraCmdObj) obj;
-			if (!Arrays.deepEquals(afterArgs, other.afterArgs))
+			ExtraCmdListener other = (ExtraCmdListener) obj;
+			if (!Arrays.deepEquals(builder.getArgs(), other.builder.getArgs()))
 				return false;
-			if (!Arrays.deepEquals(args, other.args))
-				return false;
-			if (authorId == null) {
-				if (other.authorId != null)
+			if (builder.getAuthorId() == null) {
+				if (other.builder.getAuthorId() != null)
 					return false;
-			} else if (!authorId.equals(other.authorId))
+			} else if (!builder.getAuthorId().equals(other.builder.getAuthorId()))
 				return false;
-			if (channel == null) {
-				if (other.channel != null)
+			if (builder.getChannel() == null) {
+				if (other.builder.getChannel() != null)
 					return false;
-			} else if (!channel.getId().equals(other.channel.getId()))
-				return false;
-			if (!Arrays.deepEquals(eachArgs, other.eachArgs))
-				return false;
-			if (!Arrays.deepEquals(finallyArgs, other.finallyArgs))
+			} else if (!builder.getChannel().getId().equals(other.builder.getChannel().getId()))
 				return false;
 			if (maxMsg != other.maxMsg)
 				return false;
@@ -243,11 +318,5 @@ public class ExtraCmdManager {
 				return false;
 			return true;
 		}
-		private ExtraCmdManager getEnclosingInstance() {
-			return ExtraCmdManager.this;
-		}
-	}
-	private ModelExtraCommand pickExtraCommand(String name) {
-		return ModelExtraCommand.findByName(name);
 	}
 }

@@ -1,15 +1,11 @@
 package xyz.sandwichframework.core;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import xyz.sandwichframework.core.util.Language;
-import xyz.sandwichframework.core.util.LanguageHandler;
 import xyz.sandwichframework.models.*;
 import xyz.sandwichframework.models.InputParameter.InputParamType;
 import xyz.sandwichframework.models.discord.ModelGuild;
@@ -17,38 +13,57 @@ import xyz.sandwichframework.models.discord.ModelGuild;
  * Representa el comando de ayuda automático del bot.
  * Represents the bot automatic help command.
  * @author Juan Acuña
- * @version 1.0
+ * @version 1.2
  */
-public class AutoHelpCommand {
-	public static final String AUTO_HELP_KEY = "help";
-	private static BotRunner runner = BotRunner._self;
-	
-	public static String[] getHelpOptions(Language lang) {
-		switch(LanguageHandler.getLanguageParent(lang)) {
-			case ES:
-				String[] s = {"ayuda","ay"};
-				return s;
-			case EN:
-				String[] s1 = {"help","h"};
-				return s1;
-			default:
-				String[] s2 = {};
-				return s2;
-		}
+public class AutoHelpCommand extends CommandBase{
+	/**
+	 * Bot al cual este AutoHelpCommand esta asociado.
+	 * Bot wich this AutoHelpCommand is associated.
+	 */
+	protected Bot bot;
+	/**
+	 * Constante que indica el identificador de este comando.
+	 * Constant wich Indicates this command identifier.
+	 */
+	public static final String AUTO_HELP_KEY = "Help";
+	/**
+	 * Inidica si los comandos y categorías etiquetadas como 'NSFW' deben acultarse al usar el comando de ayuda automático.
+	 * Indicates if the commands an categories tagged as 'NSFW' have to been hidden when using the automatic help command.
+	 */
+	protected boolean hide_nsfw_category = false;
+	/**
+	 * Constructor de la clase AutoHelpCommand.
+	 * Constructor of the AutoHelpCommand class.
+	 */
+	protected AutoHelpCommand(Bot bot) {
+		super(AUTO_HELP_KEY);
+		this.hide_nsfw_category=bot.isHideNSFWCategory();
+		this.setName(Language.EN, "Help");
+		this.setName(Language.ES, "Ayuda");
+		String[] a_en = {"h","hlp","?"};
+		String[] a_es = {"a","ayda","?"};
+		this.setAlias(Language.EN, a_en);
+		this.setAlias(Language.ES, a_es);
+		this.bot=bot;
 	}
-	public static void help(MessageReceivedEvent e, ArrayList<InputParameter> parametros) {
+	/**
+	 * Metodo que ejecuta el comando de ayuda.
+	 * Method that executes the help command.
+	 */
+	public void help(CommandPacket packet) {
+		MessageReceivedEvent e = packet.getMessageReceivedEvent();
 		Language actualLang = Language.ES;
 		ModelGuild actualGuild = null;
 		String searchQuery = null;
 		EmbedBuilder eb = null;
 		boolean cmdPass = false;
 		boolean catPass = false;
-		if(e.isFromGuild()) {
-			actualGuild = BotGuildsManager.getManager().getGuild(e.getGuild().getIdLong());
+		if(packet.isFromGuild()) {
+			actualGuild = packet.getGuildsManager().getGuild(e.getGuild().getIdLong());
 			if(actualGuild!=null)
 				actualLang = actualGuild.getLanguage();
 		}
-		for(InputParameter ip : parametros) {
+		for(InputParameter ip : packet.getParameters()) {
 			if(ip.getType()==InputParamType.Custom) {
 				searchQuery = ip.getValueAsString();
 			}
@@ -57,7 +72,7 @@ public class AutoHelpCommand {
 			ModelCommand sCmd = null;
 			ModelCategory sCat = null;
 			boolean iscmd = searchQuery.startsWith("$");
-			for(ModelCommand mc : runner.commands) {
+			for(ModelCommand mc : ModelCommand.getAsList()) {
 				if(mc.getName(actualLang).equalsIgnoreCase(searchQuery) || searchQuery.equalsIgnoreCase("$"+mc.getName(actualLang))) {
 					sCmd=mc;
 					if(actualGuild!=null) {
@@ -92,7 +107,7 @@ public class AutoHelpCommand {
 			if(iscmd) {
 				eb = setForCommand(eb,sCmd,actualLang,!cmdPass);
 			}else {
-				for(ModelCategory mc : runner.categories) {
+				for(ModelCategory mc : ModelCategory.getAsList()) {
 					if(mc.getName(actualLang).equalsIgnoreCase(searchQuery)) {
 						sCat=mc;
 						if(actualGuild!=null) {
@@ -120,8 +135,8 @@ public class AutoHelpCommand {
 			eb.setTitle(Values.value("xyz-sndwch-def-hlp-title", actualLang));
 			eb.setDescription(Values.value("xyz-sndwch-def-hlp-desc", actualLang));
 			eb.addField("", Values.value("xyz-sndwch-def-hlp-cats", actualLang), false);
-			for(ModelCategory category : runner.categories) {
-				if(runner.hide_nsfw_category && category.isNsfw() && !e.getTextChannel().isNSFW()) {
+			for(ModelCategory category : ModelCategory.getAsList()) {
+				if(this.hide_nsfw_category && category.isNsfw() && !packet.getTextChannel().isNSFW()) {
 					continue;
 				}
 				if(!category.isVisible()) {
@@ -130,25 +145,27 @@ public class AutoHelpCommand {
 				eb.addField(category.getName(actualLang),category.getDesc(actualLang), false);
 				String cmds="";
 				for(ModelCommand command : category.getCommands()) {
-					if(!command.isVisible()) {
+					if(!command.isVisible() || command.isNsfw()) {
 						continue;
 					}
 					cmds += "`"+command.getName(actualLang)+(command.isEnabled()?"` ":"("+Values.value("xyz-sndwch-def-t-na", actualLang)+")` ");
 				}
-				eb.addField(Values.formatedValue("xyz-sndwch-def-hlp-catcmd", actualLang, cmds),Values.formatedValue("xyz-sndwch-def-hlp-cathint", actualLang,runner.commandsPrefix,category.getName(actualLang)),false);
+				eb.addField(Values.formatedValue("xyz-sndwch-def-hlp-catcmd", actualLang, cmds),Values.formatedValue("xyz-sndwch-def-hlp-cathint", actualLang,packet.getBot().getPrefix(),category.getName(actualLang)),false);
 			}
 		}
 		if(eb==null) {
 			eb=new EmbedBuilder();
 			eb.setTitle(Values.value("xyz-sndwch-def-hlp-cat-nf", actualLang));
 		}
-		e.getChannel().sendMessage(eb.build()).queue();
+		e.getChannel().sendMessageEmbeds(eb.build()).queue();
 	}
-	
-	private static EmbedBuilder setForCommand(EmbedBuilder eb, ModelCommand cmd, Language lang, boolean pass) {
-		if(!pass) {
+	/**
+	 * Metodo auxiliar para imprimir la ayuda de un comando.
+	 * Auxiliary method for printing the help of a command.
+	 */
+	private EmbedBuilder setForCommand(EmbedBuilder eb, ModelCommand cmd, Language lang, boolean pass) {
+		if(!pass || cmd.isNsfw())
 			return null;
-		}
 		eb = new EmbedBuilder();
 		String als = "";
 		if(cmd.getAlias(lang).length>0) {
@@ -172,22 +189,26 @@ public class AutoHelpCommand {
 				
 				if(option.getAlias(lang).length>0) {
 					for(String a : option.getAlias(lang)) {
-						als2 += ", " + runner.optionsPrefix + a;
+						als2 += ", " + bot.getOptionsPrefix() + a;
 					}
 					als2=" _`[Alias: " + als2.substring(1) + "]`_";
 				}
-				eb.addField("> " + (option.isEnabled()?"":"*("+Values.value("xyz-sndwch-def-t-na", lang)+")* ~") + runner.optionsPrefix + option.getName(lang) + als2  + (option.isEnabled()?"":"~"), ">>> " + option.getDesc(lang), false);
+				eb.addField("> " + (option.isEnabled()?"":"*("+Values.value("xyz-sndwch-def-t-na", lang)+")* ~") + bot.getOptionsPrefix() + option.getName(lang) + als2  + (option.isEnabled()?"":"~"), ">>> " + option.getDesc(lang), false);
 			}
 		}
 		return eb;
 	}
-	private static EmbedBuilder setForCategory(EmbedBuilder eb, ModelCategory cat, Language lang, boolean duplicated,boolean catPass, ModelGuild guild) {
+	/**
+	 * Metodo auxiliar para imprimir la ayuda de una categoría.
+	 * Auxiliary method for printing the help of a category.
+	 */
+	private EmbedBuilder setForCategory(EmbedBuilder eb, ModelCategory cat, Language lang, boolean duplicated,boolean catPass, ModelGuild guild) {
 		if(!catPass) {
 			return null;
 		}
 		eb = new EmbedBuilder();
-		eb.setTitle(Values.formatedValue("xyz-sndwch-def-hlp-cattitle", lang, cat.getName(lang)));/*************************************CAMBIAR**************************************/
-		eb.setDescription((duplicated?Values.formatedValue("xyz-sndwch-def-hlp-dup", lang, cat.getName(lang))+"\n":"")+cat.getDesc(lang));/******************************************/
+		eb.setTitle(Values.formatedValue("xyz-sndwch-def-hlp-cattitle", lang, cat.getName(lang)));
+		eb.setDescription((duplicated?Values.formatedValue("xyz-sndwch-def-hlp-dup", lang, cat.getName(lang))+"\n":"")+cat.getDesc(lang));
 		for(ModelCommand command : cat.getCommands()) {
 			if(!command.isVisible()) {
 				continue;
@@ -202,9 +223,22 @@ public class AutoHelpCommand {
 				}
 				als=" _`[Alias: " + als.substring(1) + "]`_";
 			}
-			eb.addField("> " + (command.isEnabled()?"":"*("+Values.value("xyz-sndwch-def-t-na", lang)+")* ") + command.getName(lang) + als, ">>> " + command.getDesc(lang) + (command.isEnabled()?Values.formatedValue("xyz-sndwch-def-hlp-cmdhint", lang,runner.commandsPrefix, command.getName(lang).toLowerCase()):""),false);
-			System.out.println("fineb:"+eb);
+			eb.addField("> " + (command.isEnabled()?"":"*("+Values.value("xyz-sndwch-def-t-na", lang)+")* ") + command.getName(lang) + als, ">>> " + command.getDesc(lang) + (command.isEnabled()?Values.formatedValue("xyz-sndwch-def-hlp-cmdhint", lang, bot.getPrefix(), command.getName(lang).toLowerCase()):""),false);
 		}
 	return eb;
+	}
+	/**
+	 * Devuelve verdadero si el la protección de contenido NSFW esta activada en este comando.
+	 * Returns true if the NSFW protection is enabled in this command.
+	 */
+	public boolean isHideNSFWCategory() {
+		return hide_nsfw_category;
+	}
+	/**
+	 * Configura si el la protección de contenido NSFW esta activada en este comando.
+	 * Sets if the NSFW protection is enabled in this command.
+	 */
+	public void setHideNSFWCategory(boolean hide) {
+		this.hide_nsfw_category = hide;
 	}
 }

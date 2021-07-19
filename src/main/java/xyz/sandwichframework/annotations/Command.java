@@ -13,16 +13,42 @@ import java.lang.annotation.Target;
  * Indicates that the method is a Command.
  * 
  * @author Juan Acuña
- * @version 1.0
+ * @version 1.1
  */
 public @interface Command {
 	/**
 	 * Identificador del comando. Tambien es el nombre en el idioma por defecto indicado.
 	 * Identifier of the command. Also it is the name in the default language indicated.
 	 */
-	String name();
+	String id();
+	/**
+	 * Descripción del comando en el idioma por defecto indicado.
+	 * Description of the command in the default language indicated.
+	 */
 	String desc() default "";
+	/**
+	 * Alias del comando. Son otros Strings con los que se puede invocar al comando. Son unicos y no pueden repetirse ni ser iguales a otros comandos ni alias de estos.
+	 * Aliases of the command. They are others Strings with you can call the command. They must be unique and can't be the same as the name of others commands or their aliases.
+	 */
 	String[] alias() default {};
+	/**
+	 * Es un comando NSFW.
+	 * It's a NSFW command.
+	 */
+	boolean isNSFW() default false;
+	/**
+	 * Es un comando de ayuda.
+	 * It's a help command.
+	 */
+	boolean isHelpCommand() default false;
+	/**
+	 * El comando esta activado para su uso.
+	 * The command is enabled for use.
+	 */
 	boolean enabled() default true;
+	/**
+	 * El comando es visible por los comandos de ayuda.
+	 * The command is visible for the help commands.
+	 */
 	boolean visible() default true;
 }

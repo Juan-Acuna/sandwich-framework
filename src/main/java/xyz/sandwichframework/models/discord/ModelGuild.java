@@ -2,10 +2,17 @@ package xyz.sandwichframework.models.discord;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 import xyz.sandwichframework.core.util.Language;
+import xyz.sandwichframework.models.ModelCommand;
 /**
  * Representa un Servidor de Discord. Útil para las configuraciones por servidor.
  * Represents a Discord's Guild. Useful for Guilds' settings.
@@ -46,6 +53,23 @@ public class ModelGuild {
 		this.language = language;
 		actuallyJoined=true;
 		specialRoles.put("admin", null);
+	}
+	public static boolean canRunThisCommand(ModelGuild guild, ModelCommand command, MessageChannel channel, User author) {
+		if(guild==null) {
+			return !command.getCategory().isNsfw();
+		}
+		Member m = ((TextChannel)channel).getGuild().getMember(author);
+		boolean r = guild.isCommandAllowed(command.getId()) 
+				&& guild.isCategoryAllowed(command.getCategory().getId()) 
+				&& guild.isChannelAllowed(channel.getId())
+				&& guild.isMemberAllowed(m.getId());
+		List<Role> l = m.getRoles();
+		if(l.size()>0) {
+			r = r && guild.isRoleAllowed(l.get(0).getId());
+		}else {
+			r = r && !guild.defaultDenyRoles;
+		}
+		return r;
 	}
 	public long getId() {
 		return id;
@@ -143,35 +167,14 @@ public class ModelGuild {
 	public void setDefaultDenyChannels(boolean defaultDenyChannels) {
 		this.defaultDenyChannels = defaultDenyChannels;
 	}
-	
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (int) (id ^ (id >>> 32));
-		return result;
-	}
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		ModelGuild other = (ModelGuild) obj;
-		if (id != other.id)
-			return false;
-		return true;
-	}
 	public boolean isCommandAllowed(String cmdId) {
-		Boolean b = allowedCommands.get(cmdId);
+		Boolean b = allowedCommands.get(cmdId.toLowerCase());
 		if(b!=null)
 			return b.booleanValue();
 		return !defaultDenyCommands;
 	}
 	public boolean isCategoryAllowed(String categoryId) {
-		Boolean b = allowedCategories.get(categoryId);
+		Boolean b = allowedCategories.get(categoryId.toLowerCase());
 		if(b!=null)
 			return b.booleanValue();
 		return !defaultDenyCategories;
@@ -195,10 +198,10 @@ public class ModelGuild {
 		return !defaultDenyChannels;
 	}
 	public void setAllowedCommand(String cmdId, boolean allowed) {
-		allowedCommands.put(cmdId, allowed);
+		allowedCommands.put(cmdId.toLowerCase(), allowed);
 	}
 	public void setAllowedCategory(String categoryId, boolean allowed) {
-		allowedCategories.put(categoryId, allowed);
+		allowedCategories.put(categoryId.toLowerCase(), allowed);
 	}
 	public void setAllowedRole(String roleId, boolean allowed) {
 		allowedRoles.put(roleId, allowed);
@@ -208,5 +211,43 @@ public class ModelGuild {
 	}
 	public void setAllowedChannel(String channelId, boolean allowed) {
 		allowedChannels.put(channelId, allowed);
+	}
+	public boolean isActuallyJoined() {
+		return actuallyJoined;
+	}
+	public void setActuallyJoined(boolean actuallyJoined) {
+		this.actuallyJoined = actuallyJoined;
+	}
+	public String getCustomPrefix() {
+		return customPrefix;
+	}
+	public void setCustomPrefix(String customPrefix) {
+		this.customPrefix = customPrefix;
+	}
+	public String getCustomOptionsPrefix() {
+		return customOptionsPrefix;
+	}
+	public void setCustomOptionsPrefix(String customOptionsPrefix) {
+		this.customOptionsPrefix = customOptionsPrefix;
+	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (id ^ (id >>> 32));
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ModelGuild other = (ModelGuild) obj;
+		if (id != other.id)
+			return false;
+		return true;
 	}
 }
