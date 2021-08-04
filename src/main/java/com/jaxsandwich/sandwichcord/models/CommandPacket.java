@@ -158,8 +158,8 @@ public class CommandPacket {
 		loadChannels(channel);
 	}
 	/**
-	 * [ES] Asigna el {@link MessageChanel} a un tipo especifico de canal.<br>
-	 * [EN] Assigns the {@link MessageChanel} to a specific type of channel.
+	 * [ES] Asigna el {@link MessageChannel} a un tipo especifico de canal.<br>
+	 * [EN] Assigns the {@link MessageChannel} to a specific type of channel.
 	 */
 	protected void loadChannels(MessageChannel channel) {
 		this.channelType=channel.getType();

@@ -13,7 +13,7 @@ Este framework contiene lo necesario para desarrollar un bot basico pero útil, 
 
 ## Instrucciones de implementación
 
-### 1.- Instalación
+### 1.- Instalación  [Versión actual: 0.6.0-SNAPSHOT, Beta: 0.7.0-SNAPSHOT]
 Para instalar el framework basta con descargar el archivo "sandwichcord-framework-VERSION.jar" e importarlo en el proyecto java para crear un Bot de Discord.  
 Si usas gestores de dependencias, como Apache Maven o Gradle, debes seguir los pasos correspondientes según el gestor para poder importar el archivo localmente.
 ##### **Se planifica su futura publicación en repositorios Maven/Gradle a través de GitHub Packages.*

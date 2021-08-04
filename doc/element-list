@@ -1,8 +1,9 @@
-xyz.sandwichframework.annotations
-xyz.sandwichframework.annotations.configure
-xyz.sandwichframework.annotations.text
-xyz.sandwichframework.core
-xyz.sandwichframework.core.util
-xyz.sandwichframework.core.util.defaultvalues
-xyz.sandwichframework.models
-xyz.sandwichframework.models.discord
+com.jaxsandwich.sandwichcord.annotations
+com.jaxsandwich.sandwichcord.annotations.configure
+com.jaxsandwich.sandwichcord.annotations.text
+com.jaxsandwich.sandwichcord.core
+com.jaxsandwich.sandwichcord.core.util
+com.jaxsandwich.sandwichcord.core.util.defaultvalues
+com.jaxsandwich.sandwichcord.development
+com.jaxsandwich.sandwichcord.models
+com.jaxsandwich.sandwichcord.models.discord
