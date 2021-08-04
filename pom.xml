@@ -68,7 +68,7 @@
   	<repository>
      <id>github</id>
      <name>GitHub Juan-Acuna Apache Maven Packages</name>
-     <url>https://maven.pkg.github.com/Juan-Acuna/sandwich-framework</url>
+     <url>https://maven.pkg.github.com/Juan-Acuna/sandwichcord-framework</url>
   	</repository>
   </distributionManagement>
 </project>
