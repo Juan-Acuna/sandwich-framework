@@ -6,8 +6,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import com.jaxsandwich.sandwichcord.models.ExtraCmdPacket;
 import com.jaxsandwich.sandwichcord.models.ModelExtraCommand;
