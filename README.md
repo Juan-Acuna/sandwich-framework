@@ -145,7 +145,7 @@ public class ClasePrincipal {
 	}
 }
 ```
-Primero se inicializa el bot con el metodo estático [BotRunner.singleBotModeInit(Bot)][INIT-BOT], para que el framework analice el bot y configure todo lo necesario para funcionar. Luego se puede iniciar la ejecución del bot con el metodo [bot.runBot()][RUN-BOT]. Esto último permite hacer configuraciones al objeto [JDABuilder][JDABUILDER](vea la [documentación de JDA4][jda]) contenido en el bot, ya que una vez este comienza su ejecución, estas no pueden ser aplicadas.  
+Primero se inicializa el bot con el metodo estático [BotRunner.singleBotModeInit(Bot)][INIT-BOT], para que el framework analice el bot y configure todo lo necesario para funcionar. Luego se puede iniciar la ejecución del bot con el metodo [bot.runBot()][RUN-BOT]. Esto último permite hacer configuraciones al objeto [JDABuilder][JDABUILDER] contenido en el bot, ya que una vez este comienza su ejecución, estas no pueden ser aplicadas.  
   
 ### 4.- ¡Probar y seguir mejorando!
 El bot ya está listo y corriendo, solo queda invitarlo a tu servidor de Discord y seguir agregándole características.
