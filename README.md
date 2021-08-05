@@ -17,7 +17,7 @@ Este framework contiene lo necesario para desarrollar un bot basico pero útil, 
 
 ## Instalación | Versión actual: [0.7.0-SNAPSHOT(ALPHA)][actual]
 ### Insatalación Maven
-*Se debe reemplazar VERSION por la versión que requieren*
+Se debe reemplazar *VERSION* por la versión que se desea utilizar(se recomienda la más reciente).  
 Dentro de las etiquetas ```<dependencies>``` en pom.xml:
 ```xml
 <dependency>
