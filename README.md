@@ -151,5 +151,5 @@ Primero se inicializa el bot con el metodo estático [BotRunner.singleBotModeIni
 El bot ya está listo y corriendo, solo queda invitarlo a tu servidor de Discord y seguir agregándole características.
 
 
-## Ejemplo de bot desarrollado con Sandwich Framework
+## Ejemplo de bot desarrollado con Sandwichcord Framework
 Un ejemplo de bot desarrollado con este framework es el bot multiuso llamado [Jax Sandwich](https://github.com/Juan-Acuna/jax-sndwch-bot)
