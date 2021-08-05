@@ -26,7 +26,7 @@ Dentro de las etiquetas ```<dependencies>``` en pom.xml:
   <version>0.7.0-SNAPSHOT</version>
 </dependency>
 ```
-Dentro de las etiquetas```<repositories>``` en pom.xml:  
+Dentro de las etiquetas ```<repositories>``` en pom.xml:  
 ```xml
 <repository>
   <snapshots>
