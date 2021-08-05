@@ -51,7 +51,7 @@ Dentro de las etiquetas ```<repositories>``` en pom.xml:
 </repository>
 ```
 ### Importando en Gradle
-Actualmente no cuenta con soporte a Gradle, por lo que si lo utilizas, tendrás que realizar una importación local del archivo `sandwichcord-framework-VERSION.jar` siguiendo las instucciones para importar archivos .jar en proyecto Gradle según el IDE correspondiente.
+Actualmente no cuenta con soporte a Gradle, por lo que si lo utilizas, tendrás que realizar una importación local del archivo `sandwichcord-framework-VERSION.jar` siguiendo las [instucciones para importar archivos .jar en proyecto Gradle][https://docs.gradle.org/current/userguide/declaring_dependencies.html#sub:file_dependencies](en inglés).
   
 ### Importando en proyecto Java 
 Si no usas alguna de las herramientas anteriores, puedes descargar el archivo `sandwichcord-framework-VERSION.jar` e importarlo en el proyecto java para crear un Bot de Discord.
