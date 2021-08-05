@@ -1,3 +1,7 @@
+[framework]:http://jaxsandwich.com/sandwichcord/  
+[actual]:http://jaxsandwich.com/sandwichcord/v0.7.0/javadoc/  
+[web-jax]:http://jaxsandwich.com/  
+[jda]:https://ci.dv8tion.net/job/JDA/javadoc/  
 > ## AVISO
 > Tanto el framework como la documentación estan aún en desarrollo y podrían variar en su contenido, contener bugs no reportados, o encontrarse incompleta(en el caso de la documentación). Por favor tener esto en consideración al momento de su uso.
 
@@ -7,23 +11,43 @@
 Si eres nuevo en el desarrollo de bots para Discord, puede que esto te interese.  
 Este framework contiene lo necesario para desarrollar un bot basico pero útil, simplificando algunas cosas.
 
-##### **Este framework depende de la librería [JDA 4](https://github.com/DV8FromTheWorld/JDA)*
-##### **Sandwich Framework ayuda con la gestion de categorias, comandos, opciones/parametros, idioma entre otros, mas se recomienda estudiar la [documentación de la librería JDA 4](https://ci.dv8tion.net/job/JDA/javadoc/) para un correcto desarrollo.*
+##### **Este framework depende de la librería [JDA 4][jda]*
+##### **Sandwich Framework ayuda con la gestion de categorias, comandos, opciones/parametros, idioma entre otros, mas se recomienda estudiar la [documentación de la librería JDA 4][jda] para un correcto desarrollo.*
 ###### **Actualmente solo cuenta con soporte para inglés y español*
 
-## Instrucciones de implementación
+## Instalación | Versión actual: [0.7.0-SNAPSHOT(ALPHA)][actual]
+### Insatalación Maven
+*Se debe reemplazar VERSION por la versión que requieren*
+Dentro de las etiquetas ```<dependencies>``` en pom.xml:
+```xml
+<dependency>
+  <groupId>com.jaxsandwich</groupId>
+  <artifactId>sandwichcord-framework</artifactId>
+  <version>0.7.0-SNAPSHOT</version>
+</dependency>
+```
+Dentro de las etiquetas```<repositories>``` en pom.xml:  
+```xml
+<repository>
+  <snapshots>
+    <enabled>true</enabled>
+  </snapshots>
+  <id>github</id>
+  <url>https://maven.pkg.github.com/juan-acuna/*</url>
+</repository>
+```
 
-### 1.- Instalación  [Versión actual: 0.7.0-SNAPSHOT(ALPHA)]
-Para instalar el framework basta con descargar el archivo "sandwichcord-framework-VERSION.jar" e importarlo en el proyecto java para crear un Bot de Discord.  
-Si usas gestores de dependencias, como Apache Maven o Gradle, debes seguir los pasos correspondientes según el gestor para poder importar el archivo localmente.
-##### **Se planifica su futura publicación en repositorios Maven/Gradle a través de GitHub Packages.*
-### 2.- Crear una clase Bot.
+  
+Si no usas un gestor de dependencias, puedes descargar el archivo "sandwichcord-framework-VERSION.jar" e importarlo en el proyecto java para crear un Bot de Discord.
+
+## Instrucciones de implementación
+  
+### 1.- Crear una clase Bot.
 Java es un lenguaje de programación orientado a objetos(POO) y siguiendo estas buenas practicas, todas las interacciones dentro del framework se basan en objetos.  
 Una de las clases más importantes es la clase Bot y para crear un bot de Discord debes crear una clase que herede de esta.  
-Para este ejemplo, comenzaremos importando una serie de clases
+Para este ejemplo básico, comenzaremos importando una serie de clases
 ```java
 import com.jaxsandwich.sandwichcord.core.Bot;
-import com.jaxsandwich.sandwichcord.models.discord.GuildConfig;
 import com.jaxsandwich.sandwichcord.core.util.Language;
 ```
 Después, creamos una clase que herede Bot, por ejemplo la clase MyBot
@@ -59,9 +83,12 @@ public MyBot(String token) {
   this.setIgnoreWebHook(true);
 }
 ```
-Para saber mas que hacen estas y otras configuraciones, revise la documentación.  
-### 3.- Crear los comandos
-Los comandos tambien son objetos, pero a diferencia del bot, no necesitas crear una clase por cada uno.  
+Para saber mas que hacen estas y otras configuraciones, revise la [documentación][framework].  
+  
+Con lo anterior, ya tienes un bot de Discord!... Un bot que aun no hace nada, ya que aún no conoe ningun comando.
+  
+### 2.- Crear los comandos
+Los comandos definen las capacidades del bot, son todo lo que este puede hacer y son la parte mas interesante de programar(y la que más tiempo lleva). Los comandos tambien son objetos, pero a diferencia del bot, no necesitas crear una clase por cada uno.  
 Para crear un comando es necesario crear una categoría. Esto ayuda a mantener un orden no solo durante el desarrollo del bot, sino que tambien para los usuarios de Discord que lo usen.  
 Para crear un comando, lo primero es importar una serie de anotaciones y la clase CommandPacket. Estas son necesarias para definir un comando
 ```java
@@ -77,12 +104,34 @@ public class MyCategory{
   
   @Command(id="HelloWorld", desc="Sends a Hello World! message", alias={"hw","hello"})
   public static void helloWorldCommand(CommandPacket packet){
-    packet.getMessageReceivedEvent().getMessageChannel().sendMessage("Hello Wolrd!").queue();
+    packet.sendMessage("Hello Wolrd!").queue();
   }
-
 }
 ```
-[...]
+La clase CommandPacket ofrece una serie de metodos utiles para programar comandos, ademas de contener toda la información necesaria, ya que dentro de esta se encuentra el evento que desencadenó el comando, incluyendo información del servidor, del usuario que invocó el comando, entre otros.
+Para más información, revise la documentación al respecto.
+  
+### 3.- Iniciar la ejecución del Bot
+El bot ya está listo, es un poco básico, pero ya cumple con los componentes requeridos para funcionar. Ahora solo queda encenderlo.  
+Para ejecutar el bot, se necesita crear una clase con el metodo estático main, como en cualquier otro programa Java, donde comenzaremos la ejecución del bot con la ayuda de la clase BotRunner.  
+He aquí un ejemplo de la clase que contiene el metodo main, considerando que la clase MyBot y ClasePrincipal se encuentran en el mismo package:
+```java
+import com.jaxsandwich.sandwichcord.core.BotRunner;
+
+public class ClasePrincipal {
+
+	public static void main(String[] args) throws Exception{
+		String discord_token = "Enter your Discord Token here!";
+		MyBot bot = new MyBot(discord_token);
+		BotRunner.singleBotModeInit(bot);
+		bot.runBot();
+	}
+}
+```
+Primero se inicializa el bot con el metodo estático BotRunner.singleBotModeInit(bot), para que el framework analice el bot y configure todo lo necesario para funcionar. Luego se puede iniciar la ejecución del bot con el metodo bot.runBot(). Esto último permite hacer configuraciones al objeto JDABuilder(vea la [documentación de JDA4][jda]) contenido en el bot, ya que una vez este comienza su ejecución, estas no pueden ser aplicadas.  
+  
+### 4.- ¡Probar y seguir mejorando!
+El bot ya está listo y corriendo, solo queda invitar este bot a tu servidor de Discord y seguir agregandole caracteristicas.
 
 
 ## Ejemplo de bot desarrollado con Sandwich Framework
