@@ -1,6 +1,7 @@
 [framework]:http://jaxsandwich.com/sandwichcord/latest
 [actual]:http://jaxsandwich.com/sandwichcord/v0.7.0/javadoc/
 [web-jax]:http://jaxsandwich.com/
+[jda-github]:https://github.com/DV8FromTheWorld/JDA
 [jda]:https://ci.dv8tion.net/job/JDA/javadoc/
 [gradle]:http://jaxsandwich.com/sandwichcord#instalacion-gradle
 
@@ -13,6 +14,8 @@
 [LANG]:http://jaxsandwich.com/sandwichcord/latest?q=/javadoc/com/jaxsandwich/sandwichcord/core/util/Language.html
 [INIT-BOT]:http://jaxsandwich.com/sandwichcord/latest?q=/javadoc/com/jaxsandwich/sandwichcord/core/BotRunner.html#singleBotModeInit(com.jaxsandwich.sandwichcord.core.Bot)
 
+[JDABUILDER]:https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/JDABuilder.html
+
 > ## AVISO
 > Tanto el framework como la documentación estan aún en desarrollo y podrían variar en su contenido, contener bugs no reportados, o encontrarse incompleta en el caso de la documentación. Por favor tener esto en consideración al momento de su uso.
 
@@ -22,7 +25,7 @@
 Si eres nuevo en el desarrollo de bots para Discord, puede que esto te interese.  
 Este framework contiene lo necesario para desarrollar un bot básico pero útil, simplificando algunas cosas.
 
-#### **Este framework depende de la librería [JDA 4][jda]*
+#### **Este framework depende de la librería [JDA 4][jda-github]*
 ##### **Sandwich Framework ayuda con la gestion de categorias, comandos, opciones/parametros, idioma entre otros, mas se debe estudiar la [documentación de la librería JDA 4][jda] para un correcto desarrollo.*
 ###### **Actualmente solo cuenta con soporte para inglés y español*
 
@@ -142,7 +145,7 @@ public class ClasePrincipal {
 	}
 }
 ```
-Primero se inicializa el bot con el metodo estático [BotRunner.singleBotModeInit(Bot)][INIT-BOT], para que el framework analice el bot y configure todo lo necesario para funcionar. Luego se puede iniciar la ejecución del bot con el metodo [bot.runBot()][RUN-BOT]. Esto último permite hacer configuraciones al objeto JDABuilder(vea la [documentación de JDA4][jda]) contenido en el bot, ya que una vez este comienza su ejecución, estas no pueden ser aplicadas.  
+Primero se inicializa el bot con el metodo estático [BotRunner.singleBotModeInit(Bot)][INIT-BOT], para que el framework analice el bot y configure todo lo necesario para funcionar. Luego se puede iniciar la ejecución del bot con el metodo [bot.runBot()][RUN-BOT]. Esto último permite hacer configuraciones al objeto [JDABuilder][JDABUILDER](vea la [documentación de JDA4][jda]) contenido en el bot, ya que una vez este comienza su ejecución, estas no pueden ser aplicadas.  
   
 ### 4.- ¡Probar y seguir mejorando!
 El bot ya está listo y corriendo, solo queda invitarlo a tu servidor de Discord y seguir agregándole características.
