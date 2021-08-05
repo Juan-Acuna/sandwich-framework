@@ -23,7 +23,7 @@ Dentro de las etiquetas ```<dependencies>``` en pom.xml:
 <dependency>
   <groupId>com.jaxsandwich</groupId>
   <artifactId>sandwichcord-framework</artifactId>
-  <version>0.7.0-SNAPSHOT</version>
+  <version>VERSION</version>
 </dependency>
 ```
 Dentro de las etiquetas ```<repositories>``` en pom.xml:  
