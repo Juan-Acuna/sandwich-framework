@@ -5,14 +5,14 @@
 [jda]:https://ci.dv8tion.net/job/JDA/javadoc/
 [gradle]:http://jaxsandwich.com/sandwichcord#instalacion-gradle
 
-[BOT]:http://jaxsandwich.com/sandwichcord/latest?q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html
-[BOTRUNNER]:http://jaxsandwich.com/sandwichcord/latest?q=/javadoc/com/jaxsandwich/sandwichcord/core/BotRunner.html
-[COMMANDPACKET]:http://jaxsandwich.com/sandwichcord/latest?q=/javadoc/com/jaxsandwich/sandwichcord/models/CommandPacket.html
-[MSG-RECEIVED]:http://jaxsandwich.com/sandwichcord/latest?q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html#onMessageReceived(net.dv8tion.jda.api.events.message.MessageReceivedEvent)
-[RUN-CMD]:http://jaxsandwich.com/sandwichcord/latest?q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html#runCommand(net.dv8tion.jda.api.events.message.MessageReceivedEvent)
-[RUN-BOT]:http://jaxsandwich.com/sandwichcord/latest?q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html#runBot()
-[LANG]:http://jaxsandwich.com/sandwichcord/latest?q=/javadoc/com/jaxsandwich/sandwichcord/core/util/Language.html
-[INIT-BOT]:http://jaxsandwich.com/sandwichcord/latest?q=/javadoc/com/jaxsandwich/sandwichcord/core/BotRunner.html#singleBotModeInit(com.jaxsandwich.sandwichcord.core.Bot)
+[BOT]:http://jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html
+[BOTRUNNER]:http://jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/BotRunner.html
+[COMMANDPACKET]:http://jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/models/CommandPacket.html
+[MSG-RECEIVED]:http://jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html#onMessageReceived(net.dv8tion.jda.api.events.message.MessageReceivedEvent)
+[RUN-CMD]:http://jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html#runCommand(net.dv8tion.jda.api.events.message.MessageReceivedEvent)
+[RUN-BOT]:http://jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html#runBot()
+[LANG]:http://jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/util/Language.html
+[INIT-BOT]:http://jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/BotRunner.html#singleBotModeInit(com.jaxsandwich.sandwichcord.core.Bot)
 
 [JDABUILDER]:https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/JDABuilder.html
 
