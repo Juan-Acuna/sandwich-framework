@@ -69,6 +69,7 @@ public class GuildsManager {
 			throw new Exception("Can't register guilds in single-guildConfig mode!");
 		if(guilds.get(guild.getId())==null) {
 			guilds.put(guild.getId(),guild);
+			guild.setReferencedGuild(this.bot.getJDA().getGuildById(guild.getId()));
 			return true;
 		}
 		return false;

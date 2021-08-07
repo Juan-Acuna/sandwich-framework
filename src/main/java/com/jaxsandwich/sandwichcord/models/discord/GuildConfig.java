@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.jaxsandwich.sandwichcord.core.Bot;
 import com.jaxsandwich.sandwichcord.core.util.Language;
 import com.jaxsandwich.sandwichcord.models.ModelCommand;
 
