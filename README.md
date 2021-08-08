@@ -47,7 +47,7 @@ Dentro de las etiquetas ```<repositories>``` en pom.xml:
     <enabled>true</enabled>
   </snapshots>
   <id>github</id>
-  <url>https://maven.pkg.github.com/juan-acuna/*</url>
+  <url>https://maven.pkg.github.com/sandwichbotsteam/*</url>
 </repository>
 ```
 ### Importando en Gradle
