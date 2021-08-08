@@ -1,18 +1,18 @@
-[framework]:http://jaxsandwich.com/sandwichcord/latest
-[actual]:http://jaxsandwich.com/sandwichcord/v0.7.0/javadoc/
+[framework]:http://sandwichcord.jaxsandwich.com/latest
+[actual]:http://sandwichcord.jaxsandwich.com/v0.7.0/javadoc/
 [web-jax]:http://jaxsandwich.com/
 [jda-github]:https://github.com/DV8FromTheWorld/JDA
 [jda]:https://ci.dv8tion.net/job/JDA/javadoc/
-[gradle]:http://jaxsandwich.com/sandwichcord#instalacion-gradle
+[gradle]:https://docs.gradle.org/current/userguide/declaring_dependencies.html#sub:file_dependencies
 
-[BOT]:http://jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html
-[BOTRUNNER]:http://jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/BotRunner.html
-[COMMANDPACKET]:http://jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/models/CommandPacket.html
-[MSG-RECEIVED]:http://jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html#onMessageReceived(net.dv8tion.jda.api.events.message.MessageReceivedEvent)
-[RUN-CMD]:http://jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html#runCommand(net.dv8tion.jda.api.events.message.MessageReceivedEvent)
-[RUN-BOT]:http://jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html#runBot()
-[LANG]:http://jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/util/Language.html
-[INIT-BOT]:http://jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/BotRunner.html#singleBotModeInit(com.jaxsandwich.sandwichcord.core.Bot)
+[BOT]:http://sandwichcord.jaxsandwich.com/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html
+[BOTRUNNER]:http://sandwichcord.jaxsandwich.com/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/BotRunner.html
+[COMMANDPACKET]:http://sandwichcord.jaxsandwich.com/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/models/CommandPacket.html
+[MSG-RECEIVED]:http://sandwichcord.jaxsandwich.com/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html#onMessageReceived(net.dv8tion.jda.api.events.message.MessageReceivedEvent)
+[RUN-CMD]:http://sandwichcord.jaxsandwich.com/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html#runCommand(net.dv8tion.jda.api.events.message.MessageReceivedEvent)
+[RUN-BOT]:http://sandwichcord.jaxsandwich.com/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html#runBot()
+[LANG]:http://sandwichcord.jaxsandwich.com/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/util/Language.html
+[INIT-BOT]:http://sandwichcord.jaxsandwich.com/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/BotRunner.html#singleBotModeInit(com.jaxsandwich.sandwichcord.core.Bot)
 
 [JDABUILDER]:https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/JDABuilder.html
 
@@ -51,7 +51,7 @@ Dentro de las etiquetas ```<repositories>``` en pom.xml:
 </repository>
 ```
 ### Importando en Gradle
-Actualmente no cuenta con soporte a Gradle, por lo que si lo utilizas, tendrás que realizar una importación local del archivo `sandwichcord-framework-VERSION.jar` siguiendo las [instucciones para importar archivos .jar en proyecto Gradle][https://docs.gradle.org/current/userguide/declaring_dependencies.html#sub:file_dependencies](en inglés).
+Actualmente no cuenta con soporte a Gradle, por lo que si lo utilizas, tendrás que realizar una importación local del archivo `sandwichcord-framework-VERSION.jar` siguiendo las [instucciones para importar archivos .jar en proyecto Gradle][gradle](en inglés).
   
 ### Importando en proyecto Java 
 Si no usas alguna de las herramientas anteriores, puedes descargar el archivo `sandwichcord-framework-VERSION.jar` e importarlo en el proyecto java para crear un Bot de Discord.
