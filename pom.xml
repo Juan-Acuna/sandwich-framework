@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.jaxsandwich</groupId>
   <artifactId>sandwichcord-framework</artifactId>
-  <version>0.7.0-SNAPSHOT</version>
+  <version>0.7.0</version>
   <name>Sandwichcord Framework</name>
   <description>Sandwichcord Framework: A simple Java 8 framework for Discord Bots development.</description>
   <packaging>jar</packaging> 
@@ -67,8 +67,8 @@
   <distributionManagement>
   	<repository>
      <id>github</id>
-     <name>GitHub Juan-Acuna Apache Maven Packages</name>
-     <url>https://maven.pkg.github.com/Juan-Acuna/sandwichcord-framework</url>
+     <name>GitHub Sandwich Bots Team Apache Maven Packages</name>
+     <url>https://maven.pkg.github.com/sandwichbotsteam/sandwichcord-framework</url>
   	</repository>
   </distributionManagement>
 </project>
