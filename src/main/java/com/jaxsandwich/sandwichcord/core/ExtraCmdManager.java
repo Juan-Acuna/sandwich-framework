@@ -78,29 +78,22 @@ public class ExtraCmdManager {
 	 * [ES] Espera por la ejecución de un comando extra.<br>
 	 * [EN] Waits for the execution of an extra command.
 	 */
-	public ExtraCmdListener waitForExtraCmd(String extraCmdName, Message message, String[] spectedValues, int maxSeg, int maxMsg, Object...args) {
-		return waitForExtraCmd(extraCmdName, message.getChannel(),message.getAuthor().getId(),spectedValues,maxSeg,maxMsg,args);
-	}
-	/**
-	 * [ES] Espera por la ejecución de un comando extra.<br>
-	 * [EN] Waits for the execution of an extra command.
-	 */
-	public ExtraCmdListener waitForExtraCmd(String extraCmdName, MessageChannel channel, String authorId, String[] spectedValues, int maxSeg, int maxMsg, Object...args) {
+	public ExtraCmdListener waitForExtraCmd(String extraCmdName, MessageReceivedEvent event, String[] spectedValues, int maxSeg, int maxMsg, Object...args) {
 		ModelExtraCommand m = ModelExtraCommand.find(extraCmdName);
 		GuildConfig g = null;
-		if(channel.getType()!=ChannelType.PRIVATE) {
-			g = bot.getGuildsManager().getConfig(((TextChannel)channel).getGuild().getIdLong());
+		if(event.isFromGuild()) {
+			g = bot.getGuildsManager().getConfig(event.getGuild().getIdLong());
 		}
-		CommandPacketBuilder cpb = new CommandPacketBuilder(bot, g, channel, authorId);
+		CommandPacketBuilder cpb = new CommandPacketBuilder(bot, g, event);
 		cpb.setArgs(args);
 		ExtraCmdListener o = new ExtraCmdListener(m,cpb, spectedValues, maxSeg, maxMsg);
-		List<ExtraCmdListener> l = threads.get(channel);
+		List<ExtraCmdListener> l = threads.get(event.getChannel());
 		if(l==null) {
 			l = Collections.synchronizedList(new ArrayList<ExtraCmdListener>());
 			l.add(o);
-			threads.put(channel, l);
+			threads.put(event.getChannel(), l);
 		}else {
-			threads.get(channel).add(o);
+			threads.get(event.getChannel()).add(o);
 		}
 		new Thread(o).start();
 		return o;

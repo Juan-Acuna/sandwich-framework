@@ -91,11 +91,12 @@ public class CommandPacketBuilder {
 	 * [ES] Constructor de CommandPacketBuilder.<br>
 	 * [EN] Constructor of CommandPacketBuilder.
 	 */
-	public CommandPacketBuilder(Bot bot, GuildConfig guild, MessageChannel channel, String authorId) {
+	public CommandPacketBuilder(Bot bot, GuildConfig guild, MessageReceivedEvent event) {
 		this.bot=bot;
 		this.guild=guild;
-		this.channel=channel;
-		this.authorId=authorId;
+		this.channel=event.getChannel();
+		this.authorId=event.getAuthor().getId();
+		this.messageReceivedEvent=event;
 	}
 	/**
 	 * [ES] Constructor de CommandPacketBuilder.<br>
