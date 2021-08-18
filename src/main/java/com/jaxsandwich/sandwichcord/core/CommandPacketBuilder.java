@@ -91,6 +91,15 @@ public class CommandPacketBuilder {
 	 * [ES] Constructor de CommandPacketBuilder.<br>
 	 * [EN] Constructor of CommandPacketBuilder.
 	 */
+	public CommandPacketBuilder(Bot bot, GuildConfig guild, MessageChannel channel) {
+		this.bot=bot;
+		this.guild=guild;
+		this.channel=channel;
+	}
+	/**
+	 * [ES] Constructor de CommandPacketBuilder.<br>
+	 * [EN] Constructor of CommandPacketBuilder.
+	 */
 	public CommandPacketBuilder(Bot bot, GuildConfig guild, MessageReceivedEvent event) {
 		this.bot=bot;
 		this.guild=guild;
@@ -120,7 +129,9 @@ public class CommandPacketBuilder {
 	 * [EN] Builds the {@link ExtraCmdPacket} with the configuration in this CommandPacketBuilder.
 	 */
 	public ExtraCmdPacket buildExtraPacket() {
-		return new ExtraCmdPacket(this.bot, this.guild, this.messageReceivedEvent,this.authorOnly, this.args);
+		if(this.messageReceivedEvent!=null)
+			return new ExtraCmdPacket(this.bot, this.guild, this.messageReceivedEvent,this.authorOnly, this.args);
+		return new ExtraCmdPacket(this.bot, this.guild, this.channel, this.args);
 	}
 	/**
 	 * [ES] Devuelve el bot de este CommandPacketBuilder.<br>

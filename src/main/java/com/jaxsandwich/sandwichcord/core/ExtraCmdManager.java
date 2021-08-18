@@ -99,6 +99,30 @@ public class ExtraCmdManager {
 		return o;
 	}
 	/**
+	 * [ES] Espera por la ejecución de un comando extra.<br>
+	 * [EN] Waits for the execution of an extra command.
+	 */
+	public ExtraCmdListener waitForExtraCmd(String extraCmdName, MessageChannel channel, boolean isFromGuild, String[] spectedValues, int maxSeg, int maxMsg, Object...args) {
+		ModelExtraCommand m = ModelExtraCommand.find(extraCmdName);
+		GuildConfig g = null;
+		if(isFromGuild) {
+			g = bot.getGuildsManager().getConfig(((TextChannel)(channel)).getGuild().getIdLong());
+		}
+		CommandPacketBuilder cpb = new CommandPacketBuilder(bot, g, channel);
+		cpb.setArgs(args);
+		ExtraCmdListener o = new ExtraCmdListener(m,cpb, spectedValues, maxSeg, maxMsg);
+		List<ExtraCmdListener> l = threads.get(channel);
+		if(l==null) {
+			l = Collections.synchronizedList(new ArrayList<ExtraCmdListener>());
+			l.add(o);
+			threads.put(channel, l);
+		}else {
+			threads.get(channel).add(o);
+		}
+		new Thread(o).start();
+		return o;
+	}
+	/**
 	 * [ES] Revisa si se llama a algun comando extra.<br>
 	 * [EN] Checks if an extra command is called.
 	 */

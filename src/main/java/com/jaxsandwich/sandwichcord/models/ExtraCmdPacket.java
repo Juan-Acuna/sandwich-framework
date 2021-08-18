@@ -4,6 +4,7 @@ import com.jaxsandwich.sandwichcord.core.Bot;
 import com.jaxsandwich.sandwichcord.development.*;
 import com.jaxsandwich.sandwichcord.models.discord.GuildConfig;
 
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 /**
  * [ES] Paquete con todo el contenido necesario para un comando extra.<br>
@@ -47,6 +48,15 @@ public class ExtraCmdPacket extends CommandPacket{
 	 */
 	@NotDocumented
 	private Object[] finallyArgs = null;
+	/**
+	 * [ES] Constructor de ExtraCmdPacket.<br>
+	 * [EN] Constructor of ExtraCmdPacket.
+	 */
+	public ExtraCmdPacket(Bot bot, GuildConfig config, MessageChannel channel, Object...args) {
+		super(bot, config, channel);
+		this.args=args;
+		this.authorOnly=false;
+	}
 	/**
 	 * [ES] Constructor de ExtraCmdPacket.<br>
 	 * [EN] Constructor of ExtraCmdPacket.

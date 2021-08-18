@@ -29,7 +29,7 @@ Este framework contiene lo necesario para desarrollar un bot básico pero útil,
 ##### **Sandwich Framework ayuda con la gestion de categorias, comandos, opciones/parametros, idioma entre otros, mas se debe estudiar la [documentación de la librería JDA 4][jda] para un correcto desarrollo.*
 ###### **Actualmente solo cuenta con soporte para inglés y español*
 
-## Instalación | Versión actual: [0.7.1(ALPHA)][actual]
+## Instalación | Versión actual: [0.7.2(ALPHA)][actual]
 ### Importando en Maven
 Se debe reemplazar *VERSION* por la versión que se desea utilizar(se recomienda la más reciente).  
 Dentro de las etiquetas ```<dependencies>``` en pom.xml:

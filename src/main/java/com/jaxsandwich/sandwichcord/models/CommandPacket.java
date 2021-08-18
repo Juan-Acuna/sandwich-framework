@@ -116,6 +116,24 @@ public class CommandPacket {
 	 * [ES] Constructor de CommandPacket.<br>
 	 * [EN] Constructor of CommandPacket.
 	 */
+	public CommandPacket(Bot bot, GuildConfig config, MessageChannel channel) {
+		this.bot=bot;
+		this.extraCmdManager=bot.getExtraCmdManager();
+		this.guildsManager=bot.getGuildsManager();
+		this.guildConfig=config;
+		if(this.guildConfig!=null) {
+			this.prefLang=this.guildConfig.getLanguage();
+			this.fromGuild=true;
+		}else {
+			this.prefLang=this.bot.getDefaultLanguage();
+		}
+		this.channel=channel;
+		loadChannels(channel);
+	}
+	/**
+	 * [ES] Constructor de CommandPacket.<br>
+	 * [EN] Constructor of CommandPacket.
+	 */
 	public CommandPacket(Bot bot, GuildConfig config, MessageReceivedEvent event) {
 		this.bot=bot;
 		this.extraCmdManager=bot.getExtraCmdManager();
