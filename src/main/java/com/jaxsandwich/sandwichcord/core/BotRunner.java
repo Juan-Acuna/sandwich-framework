@@ -1,3 +1,19 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Copyright 2021 Juan Acuña                                                   *
+ *                                                                             *
+ * Licensed under the Apache License, Version 2.0 (the "License");             *
+ * you may not use this file except in compliance with the License.            *
+ * You may obtain a copy of the License at                                     *
+ *                                                                             *
+ *     http://www.apache.org/licenses/LICENSE-2.0                              *
+ *                                                                             *
+ * Unless required by applicable law or agreed to in writing, software         *
+ * distributed under the License is distributed on an "AS IS" BASIS,           *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.    *
+ * See the License for the specific language governing permissions and         *
+ * limitations under the License.                                              *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 package com.jaxsandwich.sandwichcord.core;
 
 import java.lang.reflect.Field;
@@ -18,21 +34,24 @@ import com.jaxsandwich.sandwichcord.annotations.configure.*;
 import com.jaxsandwich.sandwichcord.annotations.text.ValueID;
 import com.jaxsandwich.sandwichcord.annotations.text.ValuesContainer;
 import com.jaxsandwich.sandwichcord.core.util.Language;
+import com.jaxsandwich.sandwichcord.development.NotDocumented;
 import com.jaxsandwich.sandwichcord.models.CommandPacket;
-import com.jaxsandwich.sandwichcord.models.ExtraCmdPacket;
-import com.jaxsandwich.sandwichcord.models.ModelCategory;
-import com.jaxsandwich.sandwichcord.models.ModelCommand;
-import com.jaxsandwich.sandwichcord.models.ModelExtraCommand;
-import com.jaxsandwich.sandwichcord.models.ModelOption;
+import com.jaxsandwich.sandwichcord.models.ResponseCommandPacket;
+import com.jaxsandwich.sandwichcord.models.components.ButtonActionObject;
+import com.jaxsandwich.sandwichcord.models.CategoryObject;
+import com.jaxsandwich.sandwichcord.models.CommandObject;
+import com.jaxsandwich.sandwichcord.models.ResponseCommandObject;
+import com.jaxsandwich.sandwichcord.models.OptionObject;
 import com.jaxsandwich.sandwichcord.models.discord.GuildConfig;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 /**
  * [ES] Clase intermediaria entre el bot(s) y el resto de elementos.<br>
  * [EN] Intermediate class between the bot(s) and the others elements.
  * @author Juancho
- * @version 1.7
+ * @version 1.8
  */
 public final class BotRunner {
 	/**
@@ -70,13 +89,16 @@ public final class BotRunner {
 	 * [EN] Instancia of BotRunner(Singleton).
 	 */
 	private static BotRunner instance = new BotRunner();
+	@NotDocumented
+	private static List<LanguageConfiguration> lconfigs;
 	/**
 	 * [ES] Constructor de BotRunner privado(Singleton).<br>
 	 * [EN] Private constructor of BotRunner(Singleton).
 	 */
 	private BotRunner() {
-		configs = Collections.synchronizedSet(new HashSet<Class<?>>());
+		configs = new HashSet<Class<?>>();
 		tempVals = new HashMap<String, Map<Language, String>>();
+		lconfigs = new ArrayList<LanguageConfiguration>();
 	}
 	/**
 	 * [ES] Devuelve la instancia de BotRunner(Singleton).<br>
@@ -93,8 +115,8 @@ public final class BotRunner {
 		if(!instance.started)
 			throw new Exception("You can't register a bot before starting the Bot Runner. Please use "
 					+ "'BotRunner.singleBotModeInit(Bot)' or 'BotRunner.multiBotModeInit(Language, Bot)' methods in order to register a bot.");
-		bot.guildsManager = GuildsManager.startSercive(bot);
-		bot.extraCmdManager = ExtraCmdManager.startService(bot);
+		bot.guildsManager = GuildConfigManager.startService(bot);
+		bot.responseCommandManager = ResponseCommandManager.startService(bot);
 		bot.autoHelpCommand = new AutoHelpCommand(bot);
 		bot.builder.addEventListeners(bot);
 		bot.setRegistered();
@@ -137,6 +159,10 @@ public final class BotRunner {
 			BotRunner.registerBot(bot);
 		}
 		instance.initialize();
+	}
+	@NotDocumented
+	public static final void addConfiguration(LanguageConfiguration config) {
+		lconfigs.add(config);
 	}
 	/**
 	 * [ES] Busca el bot registrado en BotRunner segun su tokenHash. Solo disponible en modo MultiBot.<br>
@@ -181,7 +207,7 @@ public final class BotRunner {
 		boolean u = true;
 		for(Package p : pkgs) {
 			String pn = p.getName();
-			if(pn.startsWith("com.jaxsandwich.framework.")) {
+			if(pn.startsWith("com.jaxsandwich.sandwichcord.")) {
 				if(u) {
 					pn = "com.jaxsandwich.sandwichcord.core.util.defaultvalues";
 					u=false;
@@ -196,10 +222,27 @@ public final class BotRunner {
 				// AQUI VA LO QUE SE DEBE HACER CON CADA PACKAGE
 				String[] str = p.getName().split("\\.");
 				Reflections r = new Reflections(str[0] + "." + str[1]);
+				Set<Class<?>> coms = r.getTypesAnnotatedWith(ActionContainer.class);
 				Set<Class<?>> vals = r.getTypesAnnotatedWith(ValuesContainer.class);
-				Set<Class<?>> xcs = r.getTypesAnnotatedWith(ExtraCommandContainer.class);
+				Set<Class<?>> xcs = r.getTypesAnnotatedWith(ResponseCommandContainer.class);
 				Set<Class<?>> cats = r.getTypesAnnotatedWith(Category.class);
 				Set<Class<?>> cfgs = r.getTypesAnnotatedWith(Configuration.class);
+				if(coms.size()>0) {
+					for(Class<?> c : coms) {
+						Method[] ms = c.getDeclaredMethods();
+						for(Method m : ms) {
+							ButtonAction ba = m.getAnnotation(ButtonAction.class);
+							if(ba!=null) {
+								Type[] ts = m.getGenericParameterTypes();
+								if(ts.length!=1)
+									continue;
+								if(!ts[0].getTypeName().equals(ButtonClickEvent.class.getTypeName()))
+									continue;
+								ButtonActionObject.compute(new ButtonActionObject(ba.value(), m));
+							}
+						}
+					}
+				}
 				if(vals.size()>0) {
 					for(Class<?> c : vals) {
 						Language l = c.getDeclaredAnnotation(ValuesContainer.class).value();
@@ -223,19 +266,19 @@ public final class BotRunner {
 					for(Class<?> c : xcs) {
 						Method[] xcmds = c.getDeclaredMethods();
 						if(xcmds.length>0) {
-							ModelExtraCommand mxc;
+							ResponseCommandObject mxc;
 							for(Method m : xcmds) {
 								Type[] ts = m.getGenericParameterTypes();
 								if(ts.length!=1)
 									continue;
-								if(!ts[0].getTypeName().equals(ExtraCmdPacket.class.getTypeName()))
+								if(!ts[0].getTypeName().equals(ResponseCommandPacket.class.getTypeName()))
 									continue;
-								ExtraCmdExecutionName xn = m.getAnnotation(ExtraCmdExecutionName.class);
-								ExtraCmdEachExecution xe = m.getAnnotation(ExtraCmdEachExecution.class);
-								ExtraCmdAfterExecution xa = m.getAnnotation(ExtraCmdAfterExecution.class);
-								ExtraCmdNoExecution xne = m.getAnnotation(ExtraCmdNoExecution.class);
-								ExtraCmdFinallyExecution xf = m.getAnnotation(ExtraCmdFinallyExecution.class);
-								mxc = new ModelExtraCommand();
+								ResponseCommand xn = m.getAnnotation(ResponseCommand.class);
+								ResponseWaitingExecution xe = m.getAnnotation(ResponseWaitingExecution.class);
+								ResponseSuccessExecution xa = m.getAnnotation(ResponseSuccessExecution.class);
+								ResponseFailedExecution xne = m.getAnnotation(ResponseFailedExecution.class);
+								ResponseFinallyExecution xf = m.getAnnotation(ResponseFinallyExecution.class);
+								mxc = new ResponseCommandObject();
 								String n = null;
 								if(xe!=null) {
 									n = xe.name();
@@ -256,18 +299,18 @@ public final class BotRunner {
 									mxc.setAction(m);
 								}
 								mxc.forceId(n);
-								ModelExtraCommand.compute(mxc);
+								ResponseCommandObject.compute(mxc);
 							}
 						}
 					}
 				}
 				if(cats.size()>0) {
-					ModelCategory cmdcategory;
-					ModelCommand botcmd;
+					CategoryObject cmdcategory;
+					CommandObject botcmd;
 					for(Class<?> c : cats) {
 						Method[] ms = c.getDeclaredMethods();
 						Category catanno = c.getDeclaredAnnotation(Category.class);
-						cmdcategory = new ModelCategory(defaultLanguage, (catanno.id().equals("")?c.getSimpleName():catanno.id()));
+						cmdcategory = new CategoryObject(defaultLanguage, (catanno.id().equals("")?c.getSimpleName():catanno.id()));
 						if(!catanno.desc().equals("")) {
 							cmdcategory.setDesc(defaultLanguage, catanno.desc());
 						}
@@ -283,27 +326,25 @@ public final class BotRunner {
 								continue;
 							if(!ts[0].getTypeName().equals(CommandPacket.class.getTypeName()))
 								continue;
-							botcmd = new ModelCommand(defaultLanguage, cmdanno.id(), cmdcategory, m);
+							botcmd = new CommandObject(defaultLanguage, cmdanno.id(), cmdcategory, m);
 							botcmd.setAlias(defaultLanguage, cmdanno.alias());
 							botcmd.setDesc(defaultLanguage, cmdanno.desc());
 							botcmd.setEnabled(cmdanno.enabled());
 							botcmd.setVisible(cmdanno.visible());
 							botcmd.setNsfw(cmdanno.isNSFW());
 							botcmd.setHelpCommand(cmdanno.isHelpCommand());
-							Parameter par = m.getDeclaredAnnotation(Parameter.class);
-							if(par!=null) {
-								botcmd.setParameter(defaultLanguage, par.name());
-								botcmd.setParameterDesc(defaultLanguage, par.desc());
-							}
 							Option[] op = m.getDeclaredAnnotationsByType(Option.class);
 							for(Option o : op) {
-								botcmd.addOption(new ModelOption(defaultLanguage, o.id(), o.desc(), o.alias(),o.enabled(),o.visible()));
+								String[] alias = null;
+								if(!o.noStandar())
+									alias = o.alias();
+								botcmd.addOption(new OptionObject(defaultLanguage, o.id(), o.desc(), alias, o.enabled(), o.visible(), o.noStandar()));
 							}
 							botcmd.sortOptions();
-							ModelCommand.compute(botcmd);
+							CommandObject.compute(botcmd);
 						}
 						cmdcategory.sortCommands();
-						ModelCategory.compute(cmdcategory);
+						CategoryObject.compute(cmdcategory);
 					}
 				}
 				if(cfgs.size()>0) {
@@ -313,14 +354,13 @@ public final class BotRunner {
 				}
 			}
 		}
-		Values.initialize(tempVals);
-		if(configs.size()>0 && ModelCommand.getCommandCount()>0) {
+		if(configs.size()>0 && CommandObject.getCommandCount()>0) {
 			for(Class<?> c : configs) {
 				Language lang = c.getDeclaredAnnotation(Configuration.class).value();
 				Field[] fs = c.getDeclaredFields();
 				for(Field f : fs) {
 					if(f.getDeclaredAnnotation(CategoryID.class)!=null) {
-						for(ModelCategory mc : ModelCategory.getAsList()) {
+						for(CategoryObject mc : CategoryObject.getAsList()) {
 							if(mc.getId().equals(f.getDeclaredAnnotation(CategoryID.class).value())) {
 								if(f.getDeclaredAnnotation(CategoryDescription.class)!=null) {
 									mc.setDesc(lang, (String)f.get(null));
@@ -331,10 +371,10 @@ public final class BotRunner {
 							}
 						}
 					}else if(f.getDeclaredAnnotation(CommandID.class)!=null) {
-						for(ModelCommand mc : ModelCommand.getAsList()) {
+						for(CommandObject mc : CommandObject.getAsList()) {
 							if(mc.getId().equals(f.getDeclaredAnnotation(CommandID.class).value())) {
 								if(f.getDeclaredAnnotation(OptionID.class)!=null) {
-									for(ModelOption mo : mc.getOptions()) {
+									for(OptionObject mo : mc.getOptions()) {
 										if(mo.getId().equals(f.getDeclaredAnnotation(OptionID.class).value())) {
 											if(f.getDeclaredAnnotation(OptionDescription.class)!=null) {
 												mo.setDesc(lang, (String)f.get(null));
@@ -346,13 +386,6 @@ public final class BotRunner {
 											}
 											break;
 										}
-									}
-								}else if(f.getDeclaredAnnotation(CommandParameter.class)!=null) {
-									if(f.getDeclaredAnnotation(ParameterDescription.class)!=null) {
-										mc.setParameterDesc(lang, (String)f.get(null));
-									}
-									if(f.getDeclaredAnnotation(TranslatedName.class)!=null) {
-										mc.setParameter(lang, f.getDeclaredAnnotation(TranslatedName.class).value());
 									}
 								}else {
 									if(f.getDeclaredAnnotation(CommandDescription.class)!=null) {
@@ -368,10 +401,10 @@ public final class BotRunner {
 						}
 					}else if(f.getDeclaredAnnotation(MultiCommandIDOption.class)!=null) {
 						for(String id : f.getDeclaredAnnotation(MultiCommandIDOption.class).value()) {
-							for(ModelCommand mc : ModelCommand.getAsList()) {
+							for(CommandObject mc : CommandObject.getAsList()) {
 								if(mc.getId().equals(id)) {
 									if(f.getDeclaredAnnotation(OptionID.class)!=null) {
-										for(ModelOption mo : mc.getOptions()) {
+										for(OptionObject mo : mc.getOptions()) {
 											if(mo.getId().equals(f.getDeclaredAnnotation(OptionID.class).value())) {
 												if(f.getDeclaredAnnotation(OptionDescription.class)!=null) {
 													mo.setDesc(lang, (String)f.get(null));
@@ -389,28 +422,66 @@ public final class BotRunner {
 								}
 							}
 						}
-					}else if(f.getDeclaredAnnotation(MultiCommandIDParameter.class)!=null) {
-						for(String id : f.getDeclaredAnnotation(MultiCommandIDParameter.class).value()) {
-							for(ModelCommand mc : ModelCommand.getAsList()) {
-								if(mc.getId().equals(id)) {
-									if(f.getDeclaredAnnotation(ParameterDescription.class)!=null) {
-										mc.setParameterDesc(lang, (String)f.get(null));
-									}
-									if(f.getDeclaredAnnotation(TranslatedName.class)!=null) {
-										mc.setParameter(lang, f.getDeclaredAnnotation(TranslatedName.class).value());
-									}
-									break;
-								}
-							}
-						}
 					}
 				}
 			}
 		}
+		if(lconfigs.size()>0) {
+			for(LanguageConfiguration c : lconfigs) {
+				Map<String, Map<Language, String>> catNames = c.getCatNames();
+				Map<String, Map<Language, String>> catDesc = c.getCatDesc();
+				Map<String, Map<Language, String>> cmdNames = c.getCmdNames();
+				Map<String, Map<Language, String>> cmdDesc = c.getCmdDesc();
+				Map<String, Map<Language, String>> values = c.getValues();
+				Map<String, Map<Language, String[]>> cmdAlias = c.getCmdAliases();
+				if(catNames.size()>0 || catDesc.size()>0) {
+					for(CategoryObject cat : CategoryObject.getAsList()) {
+						if(catNames.get(cat.getId())!=null) {
+							for(Language l : catNames.get(cat.getId()).keySet()) {
+								cat.setName(l, catNames.get(cat.getId()).get(l));
+							}
+						}
+						if(catDesc.get(cat.getId())!=null) {
+							for(Language l : catDesc.get(cat.getId()).keySet()) {
+								cat.setDesc(l, catDesc.get(cat.getId()).get(l));
+							}
+						}
+					}
+				}
+				if(cmdNames.size()>0 || cmdDesc.size()>0 || cmdAlias.size()>0) {
+					for(CommandObject cmd : CommandObject.getAsList()) {
+						if(cmdNames.get(cmd.getId())!=null) {
+							for(Language l : cmdNames.get(cmd.getId()).keySet()) {
+								cmd.setName(l, cmdNames.get(cmd.getId()).get(l));
+							}
+						}
+						if(cmdDesc.get(cmd.getId())!=null) {
+							for(Language l : cmdDesc.get(cmd.getId()).keySet()) {
+								cmd.setDesc(l, cmdDesc.get(cmd.getId()).get(l));
+							}
+						}
+						if(cmdAlias.get(cmd.getId())!=null) {
+							for(Language l : cmdAlias.get(cmd.getId()).keySet()) {
+								cmd.setAlias(l, cmdAlias.get(cmd.getId()).get(l));
+							}
+						}
+					}
+				}
+				if(values.size()>0) {
+					for(String id : values.keySet()) {
+						tempVals.put(id, values.get(id));
+					}
+				}
+			}
+		}
+		Values.initialize(tempVals);
+		lconfigs = null;
+		tempVals = null;
+		configs = null;
 	}
 	/**
-	 * [ES] Analiza el evento {@link MessageReceivedEvent} y ejecuta el {@link ModelCommand} para el {@link Bot} especificado.<br>
-	 * [EN] Analyzes the event {@link MessageReceivedEvent} and executes the {@link ModelCommand} for the specified {@link Bot}.
+	 * [ES] Analiza el evento {@link MessageReceivedEvent} y ejecuta el {@link CommandObject} para el {@link Bot} especificado.<br>
+	 * [EN] Analyzes the event {@link MessageReceivedEvent} and executes the {@link CommandObject} for the specified {@link Bot}.
 	 */
 	public static void run(MessageReceivedEvent e, Bot bot) throws Exception {
 		if(e.isWebhookMessage() && bot.isIgnoreWebHook())
@@ -466,10 +537,10 @@ public final class BotRunner {
 					}
 				}
 			}
-			for(ModelCommand cmd : ModelCommand.getAsList()) {
+			for(CommandObject cmd : CommandObject.getAsList()) {
 				if(r.toLowerCase().equalsIgnoreCase(prx + cmd.getName(actualLang).toLowerCase()) || r.toLowerCase().equalsIgnoreCase(cmd.getName(actualLang).toLowerCase())){
-					if(!cmd.isEnabled()) {
-						if(!cmd.isVisible()) {
+					if(!cmd.isEnabled() || !cmd.getCategory().isEnabled()) {
+						if(!cmd.isVisible() || !cmd.getCategory().isVisible()) {
 							return;
 						}
 						EmbedBuilder eb = new EmbedBuilder();

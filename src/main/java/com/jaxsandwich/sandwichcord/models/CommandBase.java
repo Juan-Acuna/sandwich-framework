@@ -1,3 +1,19 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Copyright 2021 Juan Acuña                                                   *
+ *                                                                             *
+ * Licensed under the Apache License, Version 2.0 (the "License");             *
+ * you may not use this file except in compliance with the License.            *
+ * You may obtain a copy of the License at                                     *
+ *                                                                             *
+ *     http://www.apache.org/licenses/LICENSE-2.0                              *
+ *                                                                             *
+ * Unless required by applicable law or agreed to in writing, software         *
+ * distributed under the License is distributed on an "AS IS" BASIS,           *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.    *
+ * See the License for the specific language governing permissions and         *
+ * limitations under the License.                                              *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 package com.jaxsandwich.sandwichcord.models;
 
 import java.lang.reflect.Method;
@@ -10,7 +26,7 @@ import com.jaxsandwich.sandwichcord.core.util.LanguageHandler;
  * [ES] Clase plantilla para comandos.<br>
  * [EN] Template class for commands.
  * @author Juan Acuña
- * @version 1.0
+ * @version 1.1
  */
 public abstract class CommandBase {
 	/**
@@ -52,7 +68,7 @@ public abstract class CommandBase {
 	 * [ES] Contenedor de opciones.<br>
 	 * [EN] Container of options.
 	 */
-	protected ArrayList<ModelOption> options = null;
+	protected ArrayList<OptionObject> options = null;
 	/**
 	 * [ES] Metodo que ejecuta el comando.<br>
 	 * [EN] Method that the command executes.
@@ -71,7 +87,7 @@ public abstract class CommandBase {
 		this.id=id;
 		name = new HashMap<Language, String>();
 		alias = new HashMap<Language, String[]>();
-		options = new ArrayList<ModelOption>();
+		options = new ArrayList<OptionObject>();
 	}
 	/**
 	 * [ES] Devuelve el identificador del comando.<br>
@@ -165,7 +181,7 @@ public abstract class CommandBase {
 	 * [ES] Devuelve una lista con las opciones disponibles para el comando.<br>
 	 * [EN] Returns a list of available options of the command.
 	 */
-	public ArrayList<ModelOption> getOptions() {
+	public ArrayList<OptionObject> getOptions() {
 		return options;
 	}
 	/***/
@@ -173,7 +189,7 @@ public abstract class CommandBase {
 	 * [ES] Agrega una opción al comando.<br>
 	 * [EN] Returns a list of available options of the command.
 	 */
-	public void addOption(ModelOption option) {
+	public void addOption(OptionObject option) {
 		this.options.add(option);
 	}
 	/***/

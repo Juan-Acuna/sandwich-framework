@@ -1,10 +1,26 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Copyright 2021 Juan Acuña                                                   *
+ *                                                                             *
+ * Licensed under the Apache License, Version 2.0 (the "License");             *
+ * you may not use this file except in compliance with the License.            *
+ * You may obtain a copy of the License at                                     *
+ *                                                                             *
+ *     http://www.apache.org/licenses/LICENSE-2.0                              *
+ *                                                                             *
+ * Unless required by applicable law or agreed to in writing, software         *
+ * distributed under the License is distributed on an "AS IS" BASIS,           *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.    *
+ * See the License for the specific language governing permissions and         *
+ * limitations under the License.                                              *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 package com.jaxsandwich.sandwichcord.core;
 
 import java.util.List;
 
 import com.jaxsandwich.sandwichcord.core.util.Language;
 import com.jaxsandwich.sandwichcord.models.*;
-import com.jaxsandwich.sandwichcord.models.InputParameter.InputParamType;
+import com.jaxsandwich.sandwichcord.models.OptionInput.OptionInputType;
 import com.jaxsandwich.sandwichcord.models.discord.GuildConfig;
 
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -64,16 +80,16 @@ public class AutoHelpCommand extends CommandBase{
 			if(actualGuild!=null)
 				actualLang = actualGuild.getLanguage();
 		}
-		for(InputParameter ip : packet.getParameters()) {
-			if(ip.getType()==InputParamType.NO_STANDAR) {
+		for(OptionInput ip : packet.getParameters()) {
+			if(ip.getType()==OptionInputType.NO_STANDAR) {
 				searchQuery = ip.getValueAsString();
 			}
 		}
 		if(searchQuery!=null) {
-			ModelCommand sCmd = null;
-			ModelCategory sCat = null;
+			CommandObject sCmd = null;
+			CategoryObject sCat = null;
 			boolean iscmd = searchQuery.startsWith("$");
-			for(ModelCommand mc : ModelCommand.getAsList()) {
+			for(CommandObject mc : CommandObject.getAsList()) {
 				if(mc.getName(actualLang).equalsIgnoreCase(searchQuery) || searchQuery.equalsIgnoreCase("$"+mc.getName(actualLang))) {
 					sCmd=mc;
 					if(actualGuild!=null) {
@@ -108,7 +124,7 @@ public class AutoHelpCommand extends CommandBase{
 			if(iscmd) {
 				eb = setForCommand(eb,sCmd,actualLang,!cmdPass);
 			}else {
-				for(ModelCategory mc : ModelCategory.getAsList()) {
+				for(CategoryObject mc : CategoryObject.getAsList()) {
 					if(mc.getName(actualLang).equalsIgnoreCase(searchQuery)) {
 						sCat=mc;
 						if(actualGuild!=null) {
@@ -136,7 +152,7 @@ public class AutoHelpCommand extends CommandBase{
 			eb.setTitle(Values.value("xyz-sndwch-def-hlp-title", actualLang));
 			eb.setDescription(Values.value("xyz-sndwch-def-hlp-desc", actualLang));
 			eb.addField("", Values.value("xyz-sndwch-def-hlp-cats", actualLang), false);
-			for(ModelCategory category : ModelCategory.getAsList()) {
+			for(CategoryObject category : CategoryObject.getAsList()) {
 				if(this.hide_nsfw_category && category.isNsfw() && !packet.getTextChannel().isNSFW()) {
 					continue;
 				}
@@ -145,7 +161,7 @@ public class AutoHelpCommand extends CommandBase{
 				}
 				eb.addField(category.getName(actualLang),category.getDesc(actualLang), false);
 				String cmds="";
-				for(ModelCommand command : category.getCommands()) {
+				for(CommandObject command : category.getCommands()) {
 					if(!command.isVisible() || command.isNsfw()) {
 						continue;
 					}
@@ -164,7 +180,7 @@ public class AutoHelpCommand extends CommandBase{
 	 * [ES] Metodo auxiliar para imprimir la ayuda de un comando.<br>
 	 * [EN] Auxiliary method for printing the help of a command.
 	 */
-	private EmbedBuilder setForCommand(EmbedBuilder eb, ModelCommand cmd, Language lang, boolean pass) {
+	private EmbedBuilder setForCommand(EmbedBuilder eb, CommandObject cmd, Language lang, boolean pass) {
 		if(!pass || cmd.isNsfw())
 			return null;
 		eb = new EmbedBuilder();
@@ -178,23 +194,23 @@ public class AutoHelpCommand extends CommandBase{
 		eb.setTitle(cmd.getName(lang) + als + " | "+Values.formatedValue("xyz-sndwch-def-hlp-cattitle", lang, cmd.getCategory().getName(lang)));
 		eb.setDescription(cmd.getDesc(lang));
 		eb.addField("",Values.value("xyz-sndwch-def-hlp-cmd-opts", lang),false);
-		if(cmd.getParameter(lang)!=null) {
-			eb.addField("> "+Values.formatedValue("xyz-sndwch-def-hlp-cmd-opt", lang, cmd.getParameter(lang)),">>> " + cmd.getParameterDesc(lang), false);
-		}
 		if(cmd.getOptions().size()>0) {
-			for(ModelOption option : cmd.getOptions()) {
+			for(OptionObject option : cmd.getOptions()) {
 				if(!option.isVisible()) {
 					continue;
 				}
 				String als2 = "";
-				
-				if(option.getAlias(lang).length>0) {
-					for(String a : option.getAlias(lang)) {
-						als2 += ", " + bot.getOptionsPrefix() + a;
+				if(option.isNoStandar()) {
+					eb.addField("> "+Values.formatedValue("xyz-sndwch-def-hlp-cmd-opt", lang, option.getName(lang)),">>> " + option.getDesc(lang), false);
+				}else {
+					if(option.getAlias(lang).length>0) {
+						for(String a : option.getAlias(lang)) {
+							als2 += ", " + bot.getOptionsPrefix() + a;
+						}
+						als2=" _`[Alias: " + als2.substring(1) + "]`_";
 					}
-					als2=" _`[Alias: " + als2.substring(1) + "]`_";
+					eb.addField("> " + (option.isEnabled()?"":"*("+Values.value("xyz-sndwch-def-t-na", lang)+")* ~") + bot.getOptionsPrefix() + option.getName(lang) + als2  + (option.isEnabled()?"":"~"), ">>> " + option.getDesc(lang), false);
 				}
-				eb.addField("> " + (option.isEnabled()?"":"*("+Values.value("xyz-sndwch-def-t-na", lang)+")* ~") + bot.getOptionsPrefix() + option.getName(lang) + als2  + (option.isEnabled()?"":"~"), ">>> " + option.getDesc(lang), false);
 			}
 		}
 		return eb;
@@ -203,14 +219,14 @@ public class AutoHelpCommand extends CommandBase{
 	 * [ES] Metodo auxiliar para imprimir la ayuda de una categoría.<br>
 	 * [EN] Auxiliary method for printing the help of a category.
 	 */
-	private EmbedBuilder setForCategory(EmbedBuilder eb, ModelCategory cat, Language lang, boolean duplicated,boolean catPass, GuildConfig guild) {
+	private EmbedBuilder setForCategory(EmbedBuilder eb, CategoryObject cat, Language lang, boolean duplicated,boolean catPass, GuildConfig guild) {
 		if(!catPass) {
 			return null;
 		}
 		eb = new EmbedBuilder();
 		eb.setTitle(Values.formatedValue("xyz-sndwch-def-hlp-cattitle", lang, cat.getName(lang)));
 		eb.setDescription((duplicated?Values.formatedValue("xyz-sndwch-def-hlp-dup", lang, cat.getName(lang))+"\n":"")+cat.getDesc(lang));
-		for(ModelCommand command : cat.getCommands()) {
+		for(CommandObject command : cat.getCommands()) {
 			if(!command.isVisible()) {
 				continue;
 			}

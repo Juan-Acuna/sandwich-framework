@@ -1,3 +1,19 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Copyright 2021 Juan Acuña                                                   *
+ *                                                                             *
+ * Licensed under the Apache License, Version 2.0 (the "License");             *
+ * you may not use this file except in compliance with the License.            *
+ * You may obtain a copy of the License at                                     *
+ *                                                                             *
+ *     http://www.apache.org/licenses/LICENSE-2.0                              *
+ *                                                                             *
+ * Unless required by applicable law or agreed to in writing, software         *
+ * distributed under the License is distributed on an "AS IS" BASIS,           *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.    *
+ * See the License for the specific language governing permissions and         *
+ * limitations under the License.                                              *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 package com.jaxsandwich.sandwichcord.core;
 
 import java.util.ArrayList;
@@ -5,10 +21,10 @@ import java.util.ArrayList;
 import com.jaxsandwich.sandwichcord.core.util.Language;
 import com.jaxsandwich.sandwichcord.models.CommandBase;
 import com.jaxsandwich.sandwichcord.models.CommandPacket;
-import com.jaxsandwich.sandwichcord.models.ExtraCmdPacket;
-import com.jaxsandwich.sandwichcord.models.InputParameter;
-import com.jaxsandwich.sandwichcord.models.ModelOption;
-import com.jaxsandwich.sandwichcord.models.InputParameter.InputParamType;
+import com.jaxsandwich.sandwichcord.models.ResponseCommandPacket;
+import com.jaxsandwich.sandwichcord.models.OptionInput;
+import com.jaxsandwich.sandwichcord.models.OptionObject;
+import com.jaxsandwich.sandwichcord.models.OptionInput.OptionInputType;
 import com.jaxsandwich.sandwichcord.models.discord.GuildConfig;
 
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -28,15 +44,15 @@ public class CommandPacketBuilder {
 	 */
 	private Bot bot;
 	/**
-	 * [ES] Indica que el paquete a crear es dependiente del autor. Solo disponible para {@link ExtraCmdPacket}.<br>
-	 * [EN] Indicates that the packet wich will be created depends of the autor. Only available for {@link ExtraCmdPacket}.
+	 * [ES] Indica que el paquete a crear es dependiente del autor. Solo disponible para {@link ResponseCommandPacket}.<br>
+	 * [EN] Indicates that the packet wich will be created depends of the autor. Only available for {@link ResponseCommandPacket}.
 	 */
 	private boolean authorOnly = false;
 	/**
 	 * [ES] Parametros para el paquete que se creará.<br>
 	 * [EN] Parameters for the packet wich will be created.
 	 */
-	private InputParameter[] parameters = null;
+	private OptionInput[] parameters = null;
 	/**
 	 * [ES] {@link MessageReceivedEvent} asociado al paquete.<br>
 	 * [EN] {@link MessageReceivedEvent} associated to the packet.
@@ -58,28 +74,28 @@ public class CommandPacketBuilder {
 	 */
 	private String authorId;
 	/**
-	 * [ES] Argumentos a usar en un {@link  com.jaxsandwich.sandwichcord.models.ModelExtraCommand}. Solo disponible para {@link ExtraCmdPacket}.<br>
-	 * [EN] Arguments used for a {@link  com.jaxsandwich.sandwichcord.models.ModelExtraCommand}. Only available for {@link ExtraCmdPacket}.
+	 * [ES] Argumentos a usar en un {@link  com.jaxsandwich.sandwichcord.models.ResponseCommandObject}. Solo disponible para {@link ResponseCommandPacket}.<br>
+	 * [EN] Arguments used for a {@link  com.jaxsandwich.sandwichcord.models.ResponseCommandObject}. Only available for {@link ResponseCommandPacket}.
 	 */
 	private Object[] args;
 	/**
-	 * [ES] Argumentos a usar en un {@link  com.jaxsandwich.sandwichcord.models.ModelExtraCommand} mientras esta en espera. Solo disponible para {@link ExtraCmdPacket}.<br>
-	 * [EN] Arguments used for a {@link  com.jaxsandwich.sandwichcord.models.ModelExtraCommand} while it's waiting. Only available for {@link ExtraCmdPacket}.
+	 * [ES] Argumentos a usar en un {@link  com.jaxsandwich.sandwichcord.models.ResponseCommandObject} mientras esta en espera. Solo disponible para {@link ResponseCommandPacket}.<br>
+	 * [EN] Arguments used for a {@link  com.jaxsandwich.sandwichcord.models.ResponseCommandObject} while it's waiting. Only available for {@link ResponseCommandPacket}.
 	 */
 	private Object[] eachArgs = null;
 	/**
-	 * [ES] Argumentos a usar en un {@link  com.jaxsandwich.sandwichcord.models.ModelExtraCommand} después de la ejecucion exitosa. Solo disponible para {@link ExtraCmdPacket}.<br>
-	 * [EN] Arguments used for a {@link  com.jaxsandwich.sandwichcord.models.ModelExtraCommand} after a successful execution. Only available for {@link ExtraCmdPacket}.
+	 * [ES] Argumentos a usar en un {@link  com.jaxsandwich.sandwichcord.models.ResponseCommandObject} después de la ejecucion exitosa. Solo disponible para {@link ResponseCommandPacket}.<br>
+	 * [EN] Arguments used for a {@link  com.jaxsandwich.sandwichcord.models.ResponseCommandObject} after a successful execution. Only available for {@link ResponseCommandPacket}.
 	 */
 	private Object[] afterArgs = null;
 	/**
-	 * [ES] Argumentos a usar en un {@link  com.jaxsandwich.sandwichcord.models.ModelExtraCommand} cuando no fue jecutado. Solo disponible para {@link ExtraCmdPacket}.<br>
-	 * [EN] Arguments used for a {@link  com.jaxsandwich.sandwichcord.models.ModelExtraCommand} when it's not executed. Only available for {@link ExtraCmdPacket}.
+	 * [ES] Argumentos a usar en un {@link  com.jaxsandwich.sandwichcord.models.ResponseCommandObject} cuando no fue jecutado. Solo disponible para {@link ResponseCommandPacket}.<br>
+	 * [EN] Arguments used for a {@link  com.jaxsandwich.sandwichcord.models.ResponseCommandObject} when it's not executed. Only available for {@link ResponseCommandPacket}.
 	 */
 	private Object[] noArgs = null;
 	/**
-	 * [ES] Argumentos a usar en un {@link  com.jaxsandwich.sandwichcord.models.ModelExtraCommand} se haya ejecutado o no. Solo disponible para {@link ExtraCmdPacket}.<br>
-	 * [EN] Arguments used for a {@link  com.jaxsandwich.sandwichcord.models.ModelExtraCommand} if it's been executed or not. Only available for {@link ExtraCmdPacket}.
+	 * [ES] Argumentos a usar en un {@link  com.jaxsandwich.sandwichcord.models.ResponseCommandObject} se haya ejecutado o no. Solo disponible para {@link ResponseCommandPacket}.<br>
+	 * [EN] Arguments used for a {@link  com.jaxsandwich.sandwichcord.models.ResponseCommandObject} if it's been executed or not. Only available for {@link ResponseCommandPacket}.
 	 */
 	private Object[] finallyArgs = null;
 	/**
@@ -87,15 +103,6 @@ public class CommandPacketBuilder {
 	 * [EN] Empty constructor of CommandPacketBuilder.
 	 */
 	public CommandPacketBuilder() { }
-	/**
-	 * [ES] Constructor de CommandPacketBuilder.<br>
-	 * [EN] Constructor of CommandPacketBuilder.
-	 */
-	public CommandPacketBuilder(Bot bot, GuildConfig guild, MessageChannel channel) {
-		this.bot=bot;
-		this.guild=guild;
-		this.channel=channel;
-	}
 	/**
 	 * [ES] Constructor de CommandPacketBuilder.<br>
 	 * [EN] Constructor of CommandPacketBuilder.
@@ -125,13 +132,11 @@ public class CommandPacketBuilder {
 		return new CommandPacket(this.bot,this.parameters,this.messageReceivedEvent);
 	}
 	/**
-	 * [ES] Construye el {@link ExtraCmdPacket} configurado en este CommandPacketBuilder.<br>
-	 * [EN] Builds the {@link ExtraCmdPacket} with the configuration in this CommandPacketBuilder.
+	 * [ES] Construye el {@link ResponseCommandPacket} configurado en este CommandPacketBuilder.<br>
+	 * [EN] Builds the {@link ResponseCommandPacket} with the configuration in this CommandPacketBuilder.
 	 */
-	public ExtraCmdPacket buildExtraPacket() {
-		if(this.messageReceivedEvent!=null)
-			return new ExtraCmdPacket(this.bot, this.guild, this.messageReceivedEvent,this.authorOnly, this.args);
-		return new ExtraCmdPacket(this.bot, this.guild, this.channel, this.args);
+	public ResponseCommandPacket buildExtraPacket() {
+		return new ResponseCommandPacket(this.bot, this.guild, this.messageReceivedEvent,this.authorOnly, this.args);
 	}
 	/**
 	 * [ES] Devuelve el bot de este CommandPacketBuilder.<br>
@@ -148,17 +153,17 @@ public class CommandPacketBuilder {
 		this.bot = bot;
 	}
 	/**
-	 * [ES] Devuelve los parametros({@link InputParameter}) de este CommandPacketBuilder.<br>
-	 * [EN] Returns the parameters({@link InputParameter}) of this CommandPacketBuilder.
+	 * [ES] Devuelve los parametros({@link OptionInput}) de este CommandPacketBuilder.<br>
+	 * [EN] Returns the parameters({@link OptionInput}) of this CommandPacketBuilder.
 	 */
-	public InputParameter[] getParameters() {
+	public OptionInput[] getParameters() {
 		return parameters;
 	}
 	/**
-	 * [ES] Configura los parametros({@link InputParameter}) de este CommandPacketBuilder.<br>
-	 * [EN] Sets the parameters({@link InputParameter}) of this CommandPacketBuilder.
+	 * [ES] Configura los parametros({@link OptionInput}) de este CommandPacketBuilder.<br>
+	 * [EN] Sets the parameters({@link OptionInput}) of this CommandPacketBuilder.
 	 */
-	public void setParameters(InputParameter[] parameters) {
+	public void setParameters(OptionInput[] parameters) {
 		this.parameters = parameters;
 	}
 	/**
@@ -291,15 +296,15 @@ public class CommandPacketBuilder {
 		this.finallyArgs = finallyArgs;
 	}
 	/**
-	 * [ES] Devuelve verdadero si el {@link ExtraCmdPacket} asociado a este CommandPacketBuilder depende del autor.<br>
-	 * [EN] Returns true if the {@link ExtraCmdPacket} asociated to this CommandPacketBuilder depends on the author.
+	 * [ES] Devuelve verdadero si el {@link ResponseCommandPacket} asociado a este CommandPacketBuilder depende del autor.<br>
+	 * [EN] Returns true if the {@link ResponseCommandPacket} asociated to this CommandPacketBuilder depends on the author.
 	 */
 	public boolean isAuthorOnly() {
 		return authorOnly;
 	}
 	/**
-	 * [ES] Configura si el {@link ExtraCmdPacket} asociado a este CommandPacketBuilder depende del autor.<br>
-	 * [EN] Sets if the {@link ExtraCmdPacket} asociated to this CommandPacketBuilder depends on the author.
+	 * [ES] Configura si el {@link ResponseCommandPacket} asociado a este CommandPacketBuilder depende del autor.<br>
+	 * [EN] Sets if the {@link ResponseCommandPacket} asociated to this CommandPacketBuilder depends on the author.
 	 */
 	public void setAuthorOnly(boolean authorOnly) {
 		this.authorOnly = authorOnly;
@@ -308,35 +313,35 @@ public class CommandPacketBuilder {
 	 * [ES] Analiza la entrada y devuelve los parametros del comando.<br>
 	 * [EN] Analyzes the input and returns the paramters of the command.
 	 */
-	private InputParameter[] findParameters(Language lang, String input,CommandBase command, String oprx){
+	private OptionInput[] findParameters(Language lang, String input,CommandBase command, String oprx){
 		String[] s = input.split(" ");
-		ArrayList<InputParameter> lista = new ArrayList<InputParameter>();
-		InputParameter p = new InputParameter();
+		ArrayList<OptionInput> lista = new ArrayList<OptionInput>();
+		OptionInput p = new OptionInput();
 		for(int i=1;i<s.length;i++) {
 			if((s[i]).startsWith(oprx)) {
 				p=null;
-				p = new InputParameter();
-				for(ModelOption mo : command.getOptions()) {
+				p = new OptionInput();
+				for(OptionObject mo : command.getOptions()) {
 					if(s[i].toLowerCase().equalsIgnoreCase(oprx + mo.getName(lang))) {
 						p.setKey(mo.getName(lang));
-						p.setType(InputParamType.STANDAR);
+						p.setType(OptionInputType.STANDAR);
 						break;
 					}else {
 						for(String a : mo.getAlias(lang)) {
 							if(s[i].toLowerCase().equalsIgnoreCase(oprx+a)) {
 								p.setKey(mo.getName(lang));
-								p.setType(InputParamType.STANDAR);
+								p.setType(OptionInputType.STANDAR);
 								break;
 							}
 						}
 					}
 				}
-				if(p.getType() == InputParamType.NO_STANDAR) {
-					p.setType(InputParamType.CUSTOM);
+				if(p.getType() == OptionInputType.NO_STANDAR) {
+					p.setType(OptionInputType.CUSTOM);
 					p.setKey(s[i]);
 				}
 			}else if(i==1) {
-				p.setType(InputParamType.NO_STANDAR);
+				p.setType(OptionInputType.NO_STANDAR);
 				p.setKey("nostandar");
 				p.setValue(s[i]);
 			}else if(p.getValueAsString()!=null){
@@ -352,7 +357,7 @@ public class CommandPacketBuilder {
 				lista.add(p);
 			}
 		}
-		InputParameter[] res = new InputParameter[lista.size()];
+		OptionInput[] res = new OptionInput[lista.size()];
 		return lista.toArray(res);
 	}
 }

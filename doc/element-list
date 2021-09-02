@@ -6,4 +6,5 @@ com.jaxsandwich.sandwichcord.core.util
 com.jaxsandwich.sandwichcord.core.util.defaultvalues
 com.jaxsandwich.sandwichcord.development
 com.jaxsandwich.sandwichcord.models
+com.jaxsandwich.sandwichcord.models.components
 com.jaxsandwich.sandwichcord.models.discord

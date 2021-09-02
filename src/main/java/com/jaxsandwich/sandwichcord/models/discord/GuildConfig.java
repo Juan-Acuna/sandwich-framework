@@ -1,3 +1,19 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Copyright 2021 Juan Acuña                                                   *
+ *                                                                             *
+ * Licensed under the Apache License, Version 2.0 (the "License");             *
+ * you may not use this file except in compliance with the License.            *
+ * You may obtain a copy of the License at                                     *
+ *                                                                             *
+ *     http://www.apache.org/licenses/LICENSE-2.0                              *
+ *                                                                             *
+ * Unless required by applicable law or agreed to in writing, software         *
+ * distributed under the License is distributed on an "AS IS" BASIS,           *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.    *
+ * See the License for the specific language governing permissions and         *
+ * limitations under the License.                                              *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 package com.jaxsandwich.sandwichcord.models.discord;
 
 import java.util.Collections;
@@ -7,7 +23,7 @@ import java.util.Map;
 
 import com.jaxsandwich.sandwichcord.core.Bot;
 import com.jaxsandwich.sandwichcord.core.util.Language;
-import com.jaxsandwich.sandwichcord.models.ModelCommand;
+import com.jaxsandwich.sandwichcord.models.CommandObject;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -25,9 +41,9 @@ public class GuildConfig {
 	protected long id;
 	protected Language language;
 	protected boolean actuallyJoined = true;
-	protected Guild referencedGuild = null;
 	protected String customPrefix = null;
 	protected String customOptionsPrefix = null;
+	protected Bot bot;
 	protected Map<String, Boolean> allowedCommands = (Map<String, Boolean>) Collections.synchronizedMap(new HashMap<String, Boolean>());
 	protected Map<String, Boolean> allowedCategories = (Map<String, Boolean>) Collections.synchronizedMap(new HashMap<String, Boolean>());
 	protected Map<String, Boolean> allowedRoles = (Map<String, Boolean>) Collections.synchronizedMap(new HashMap<String, Boolean>());
@@ -38,39 +54,27 @@ public class GuildConfig {
 	protected boolean defaultDenyRoles = false;
 	protected boolean defaultDenyMembers = false;
 	protected boolean defaultDenyChannels = false;
-	public GuildConfig() {}
-	public GuildConfig(Guild guild) {
+	public GuildConfig(Bot bot) {
+		this.bot=bot;
+		this.language=bot.getDefaultLanguage();
+	}
+	public GuildConfig(Guild guild, Bot bot) {
 		id=guild.getIdLong();
 		actuallyJoined=true;
-		referencedGuild = guild;
 		this.language = Language.EN;
+		this.bot=bot;
 	}
-	public GuildConfig(Guild guild, Language language) {
+	public GuildConfig(Guild guild, Language language, Bot bot) {
 		id=guild.getIdLong();
 		actuallyJoined=true;
-		referencedGuild = guild;
 		this.language = language;
+		this.bot=bot;
 	}
-	@Deprecated
-	public GuildConfig(long id) {
-		this.id = id;
-	}
-	@Deprecated
-	public GuildConfig(long id, Language language) {
-		this.id = id;
-		this.language = language;
-		actuallyJoined=true;
-	}
-	public static boolean canRunThisCommand(GuildConfig guild, ModelCommand command, MessageChannel channel, User author) {
+	public static boolean canRunThisCommand(GuildConfig guild, CommandObject command, MessageChannel channel, User author) {
 		if(guild==null) {
 			return !command.getCategory().isNsfw();
 		}
-		Member m;
-		if(guild.referencedGuild!=null) {
-			m = guild.referencedGuild.getMember(author);
-		}else {
-			m = ((TextChannel)channel).getGuild().getMember(author);
-		}
+		Member m = ((TextChannel)channel).getGuild().getMember(author);
 		boolean r = guild.isCommandAllowed(command.getId()) 
 				&& guild.isCategoryAllowed(command.getCategory().getId()) 
 				&& guild.isChannelAllowed(channel.getId())
@@ -102,14 +106,7 @@ public class GuildConfig {
 		this.actuallyJoined = joined;
 	}
 	public Guild getReferencedGuild() {
-		return referencedGuild;
-	}
-	public void setReferencedGuild(Guild referencedGuild) throws Exception {
-		if(referencedGuild==null) {
-			throw new Exception("Can't set a null Servidor reference!");
-		}
-		this.id=referencedGuild.getIdLong();
-		this.referencedGuild = referencedGuild;
+		return this.bot.getJDA().getGuildById(id);
 	}
 	public void setId(long id) {
 		this.id = id;

@@ -1,13 +1,33 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Copyright 2021 Juan Acuña                                                   *
+ *                                                                             *
+ * Licensed under the Apache License, Version 2.0 (the "License");             *
+ * you may not use this file except in compliance with the License.            *
+ * You may obtain a copy of the License at                                     *
+ *                                                                             *
+ *     http://www.apache.org/licenses/LICENSE-2.0                              *
+ *                                                                             *
+ * Unless required by applicable law or agreed to in writing, software         *
+ * distributed under the License is distributed on an "AS IS" BASIS,           *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.    *
+ * See the License for the specific language governing permissions and         *
+ * limitations under the License.                                              *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 package com.jaxsandwich.sandwichcord.core;
 
 import com.jaxsandwich.sandwichcord.core.util.Language;
+import com.jaxsandwich.sandwichcord.development.NotDocumented;
 import com.jaxsandwich.sandwichcord.models.CommandPacket;
+import com.jaxsandwich.sandwichcord.models.components.ButtonActionObject;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 /**
@@ -91,17 +111,18 @@ public abstract class Bot extends ListenerAdapter{
 	 * [ES] 
 	 * [EN] 
 	 */
+	@NotDocumented
 	protected boolean singleGuildMode = false;
 	/**
 	 * [ES] Gestor de configuración de servidores({@link com.jaxsandwich.sandwichcord.models.discord.GuildConfig}) del bot.<br>
 	 * [EN] Manager of guilds config({@link com.jaxsandwich.sandwichcord.models.discord.GuildConfig}) of the bot.
 	 */
-	protected GuildsManager guildsManager;
+	protected GuildConfigManager guildsManager;
 	/**
-	 * [ES] Gestor de comandos extra({@link com.jaxsandwich.sandwichcord.models.ModelExtraCommand}) del bot.<br>
-	 * [EN] Manager of extra command({@link com.jaxsandwich.sandwichcord.models.ModelExtraCommand}) of the bot.
+	 * [ES] Gestor de comandos extra({@link com.jaxsandwich.sandwichcord.models.ResponseCommandObject}) del bot.<br>
+	 * [EN] Manager of extra command({@link com.jaxsandwich.sandwichcord.models.ResponseCommandObject}) of the bot.
 	 */
-	protected ExtraCmdManager extraCmdManager;
+	protected ResponseCommandManager responseCommandManager;
 	/**
 	 * [ES] Representa el comando de ayuda automatico({@link AutoHelpCommand}) del bot.<br>
 	 * [EN] Represents the automatic help command({@link AutoHelpCommand}) of the bot.
@@ -135,18 +156,18 @@ public abstract class Bot extends ListenerAdapter{
 		this.registeredOnRunner=true;
 	}
 	/**
-	 * [ES] Devuelve el gestor de servidores({@link GuildsManager}) de este bot.<br>
-	 * [EN] Returns the guilds manager({@link GuildsManager}) of this bot.
+	 * [ES] Devuelve el gestor de servidores({@link GuildConfigManager}) de este bot.<br>
+	 * [EN] Returns the guilds manager({@link GuildConfigManager}) of this bot.
 	 */
-	public GuildsManager getGuildsManager() {
+	public GuildConfigManager getGuildsManager() {
 		return guildsManager;
 	}
 	/**
-	 * [ES] Devuelve el gestor de comandos extra({@link ExtraCmdManager}) de este bot.<br>
-	 * [EN] Returns the extra command manager({@link ExtraCmdManager}) of this bot.
+	 * [ES] Devuelve el gestor de comandos extra({@link ResponseCommandManager}) de este bot.<br>
+	 * [EN] Returns the extra command manager({@link ResponseCommandManager}) of this bot.
 	 */
-	public ExtraCmdManager getExtraCmdManager() {
-		return extraCmdManager;
+	public ResponseCommandManager getExtraCmdManager() {
+		return responseCommandManager;
 	}
 	/**
 	 * [ES] Devuelve el idioma({@link Language}) por defecto de este bot.<br>
@@ -373,8 +394,8 @@ public abstract class Bot extends ListenerAdapter{
 		return this.tokenHash;
 	}
 	/**
-	 * [ES] Analiza el evento({@link MessageReceivedEvent}) y ejecuta el comando({@link com.jaxsandwich.sandwichcord.models.ModelCommand}) si esta presente.<br>
-	 * [EN] Analyzes the event({@link MessageReceivedEvent}) and executes the commad({@link com.jaxsandwich.sandwichcord.models.ModelCommand}) if it's present.
+	 * [ES] Analiza el evento({@link MessageReceivedEvent}) y ejecuta el comando({@link com.jaxsandwich.sandwichcord.models.CommandObject}) si esta presente.<br>
+	 * [EN] Analyzes the event({@link MessageReceivedEvent}) and executes the commad({@link com.jaxsandwich.sandwichcord.models.CommandObject}) if it's present.
 	 */
 	protected final void runCommand(MessageReceivedEvent event) throws Exception {
 		if((this.ignoreBotsCommands && event.getAuthor().isBot()) && (this.ignoreSelfCommands && getSelfUser().equals(event.getAuthor())))
@@ -387,4 +408,14 @@ public abstract class Bot extends ListenerAdapter{
 	 * [EN] Method wich Manages the event {@link MessageReceivedEvent}. Inside this method you have to execute '{@link Bot#runCommand(MessageReceivedEvent)}'.
 	 */
 	public abstract void onMessageReceived(MessageReceivedEvent e);
+	@Override
+	/**
+	 * [ES] Metodo que gestiona los eventos {@link ButtonClickEvent}. No usar este metodo manualmente.<br>
+	 * [EN] Method which manages the {@link ButtonClickEvent} events. Do not use this method manually.
+	 */
+	public final void onButtonClick(ButtonClickEvent event) {
+		ButtonActionObject b = ButtonActionObject.find(event.getComponentId());
+		if(b!=null)
+			b.executeAction(event);
+	}
 }

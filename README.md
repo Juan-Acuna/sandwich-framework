@@ -1,18 +1,19 @@
-[framework]:http://sandwichcord.jaxsandwich.com
-[actual]:http://docs.jaxsandwich.com/v0.7.X/javadoc/
+[framework]:http://docs.jaxsandwich.com/sandwichcord/latest
+[actual]:http://docs.jaxsandwich.com/sandwichcord/v0.8.x/javadoc/
 [web-jax]:http://jaxsandwich.com/
 [jda-github]:https://github.com/DV8FromTheWorld/JDA
 [jda]:https://ci.dv8tion.net/job/JDA/javadoc/
 [gradle]:https://docs.gradle.org/current/userguide/declaring_dependencies.html#sub:file_dependencies
+[maven]:https://maven.apache.org/guides/mini/guide-3rd-party-jars-local.html  
 
-[BOT]:http://docs.jaxsandwich.com/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html
-[BOTRUNNER]:http://docs.jaxsandwich.com/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/BotRunner.html
-[COMMANDPACKET]:http://docs.jaxsandwich.com/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/models/CommandPacket.html
-[MSG-RECEIVED]:http://docs.jaxsandwich.com/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html#onMessageReceived(net.dv8tion.jda.api.events.message.MessageReceivedEvent)
-[RUN-CMD]:http://docs.jaxsandwich.com/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html#runCommand(net.dv8tion.jda.api.events.message.MessageReceivedEvent)
-[RUN-BOT]:http://docs.jaxsandwich.com/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html#runBot()
-[LANG]:http://docs.jaxsandwich.com/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/util/Language.html
-[INIT-BOT]:http://docs.jaxsandwich.com/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/BotRunner.html#singleBotModeInit(com.jaxsandwich.sandwichcord.core.Bot)
+[BOT]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html
+[BOTRUNNER]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/BotRunner.html
+[COMMANDPACKET]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/models/CommandPacket.html
+[MSG-RECEIVED]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html#onMessageReceived(net.dv8tion.jda.api.events.message.MessageReceivedEvent)
+[RUN-CMD]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html#runCommand(net.dv8tion.jda.api.events.message.MessageReceivedEvent)
+[RUN-BOT]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html#runBot()
+[LANG]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/util/Language.html
+[INIT-BOT]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/BotRunner.html#singleBotModeInit(com.jaxsandwich.sandwichcord.core.Bot)
 
 [JDABUILDER]:https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/JDABuilder.html
 
@@ -29,9 +30,11 @@ Este framework contiene lo necesario para desarrollar un bot básico pero útil,
 ##### **Sandwich Framework ayuda con la gestion de categorias, comandos, opciones/parametros, idioma entre otros, mas se debe estudiar la [documentación de la librería JDA 4][jda] para un correcto desarrollo.*
 ###### **Actualmente solo cuenta con soporte para inglés y español*
 
-## Instalación | Versión actual: [0.7.2(ALPHA)][actual]
-### Importando en Maven
-Se debe reemplazar *VERSION* por la versión que se desea utilizar(se recomienda la más reciente).  
+## Instalación | Versión actual: [0.8.0(BETA)][actual]
+### Importando en Maven  
+Actualmente no cuenta con soporte a Maven, por lo que si lo utilizas, tendrás que realizar una importación local del archivo `sandwichcord-framework-VERSION.jar` siguiendo las [instucciones para importar archivos .jar en proyecto Maven][maven](en inglés).  
+
+<!--Se debe reemplazar *VERSION* por la versión que se desea utilizar(se recomienda la más reciente).  
 Dentro de las etiquetas ```<dependencies>``` en pom.xml:
 ```xml
 <dependency>
@@ -50,6 +53,8 @@ Dentro de las etiquetas ```<repositories>``` en pom.xml:
   <url>https://maven.pkg.github.com/sandwichbotsteam/*</url>
 </repository>
 ```
+-->  
+
 ### Importando en Gradle
 Actualmente no cuenta con soporte a Gradle, por lo que si lo utilizas, tendrás que realizar una importación local del archivo `sandwichcord-framework-VERSION.jar` siguiendo las [instucciones para importar archivos .jar en proyecto Gradle][gradle](en inglés).
   
