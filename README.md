@@ -90,7 +90,7 @@ public class MyBot extends Bot{
 }
 ```
 El constructor de la clase [Bot][BOT] requiere dos parametros: el Token de Discord y el idioma por defecto del bot, el cual corresponde al valor del enum [Language][LANG].   
-El metodo abstracto [Bot.onMessageReceived(MessageReceivedEvent)][MSG-RECEIVED] que se esta sobreescribiendo se ejecutará cada vez que se reciba un mensaje. En este metodo se debe manejar la lógica para ejecutar comandos. Una vez que, dentro del metodo, se desea ejecutar el comando, se llama a la función [Bot.runCommand(MessageReceivedEvent)][RUN-CMD] pasando el evento como parámetro.  
+El metodo abstracto [Bot.onMessageReceived(MessageReceivedEvent)][MSG-RECEIVED] que se esta sobreescribiendo se ejecutará cada vez que se reciba un mensaje. En este metodo se debe manejar la lógica para ejecutar comandos. Una vez que, dentro del metodo se desea ejecutar el comando, se llama a la función [Bot.runCommand(MessageReceivedEvent)][RUN-CMD] pasando el evento como parámetro.  
 El comportamiento del bot puede ser personalizado en su constructor, he aquí un ejemplo:
 ```java
 public MyBot(String token) {
