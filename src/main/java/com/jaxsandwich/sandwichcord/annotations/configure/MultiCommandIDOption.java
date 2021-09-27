@@ -32,7 +32,6 @@ import java.lang.annotation.Target;
  * [ES] Requiere que el campo contenga una anotacion del tipo {@link OptionID}<br>
  * [ES] Requires the field to have an annotation of type {@link OptionID}
  */
-@Deprecated
 public @interface MultiCommandIDOption {
 	String[] value();
 }

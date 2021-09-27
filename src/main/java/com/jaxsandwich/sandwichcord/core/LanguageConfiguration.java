@@ -47,6 +47,7 @@ public abstract class LanguageConfiguration {
 	}
 	@NotDocumented
 	public final void addCategoryNameTranslation(Language lang, String id, String translation) {
+		id=id.toLowerCase();
 		if(catNames.get(id)==null) {
 			Map<Language, String> m = new HashMap<Language, String>();
 			m.put(lang, translation);
@@ -57,6 +58,7 @@ public abstract class LanguageConfiguration {
 	}
 	@NotDocumented
 	public final void addCommandNameTranslation(Language lang, String id, String translation) {
+		id=id.toLowerCase();
 		if(cmdNames.get(id)==null) {
 			Map<Language, String> m = new HashMap<Language, String>();
 			m.put(lang, translation);
@@ -67,6 +69,7 @@ public abstract class LanguageConfiguration {
 	}
 	@NotDocumented
 	public final void addCategoryDescription(Language lang, String id, String description) {
+		id=id.toLowerCase();
 		if(catDesc.get(id)==null) {
 			Map<Language, String> m = new HashMap<Language, String>();
 			m.put(lang, description);
@@ -77,6 +80,7 @@ public abstract class LanguageConfiguration {
 	}
 	@NotDocumented
 	public final void addCommandDescription(Language lang, String id, String description) {
+		id=id.toLowerCase();
 		if(cmdDesc.get(id)==null) {
 			Map<Language, String> m = new HashMap<Language, String>();
 			m.put(lang, description);
@@ -87,6 +91,7 @@ public abstract class LanguageConfiguration {
 	}
 	@NotDocumented
 	public final void addCommandAliases(Language lang, String id, String...aliases) {
+		id=id.toLowerCase();
 		if(cmdAliases.get(id)==null) {
 			Map<Language, String[]> m = new HashMap<Language, String[]>();
 			m.put(lang, aliases);
@@ -97,6 +102,7 @@ public abstract class LanguageConfiguration {
 	}
 	@NotDocumented
 	public final void addStringValue(Language lang, String id, String value) {
+		id=id.toLowerCase();
 		if(values.get(id)==null) {
 			Map<Language, String> m = new HashMap<Language, String>();
 			m.put(lang, value);

@@ -32,7 +32,6 @@ import java.lang.annotation.Target;
  * [ES] Requiere que el campo contenga una anotacion de tipo {@link CategoryID}, {@link CommandID} o {@link OptionID}.<br>
  * [EN] Requires the field to have an annotation of type {@link CategoryID}, {@link CommandID} o {@link OptionID}.
  */
-@Deprecated
 public @interface TranslatedName {
 	String value();
 }
