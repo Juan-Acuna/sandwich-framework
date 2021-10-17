@@ -103,7 +103,7 @@ public abstract class LanguageConfiguration {
 	 * [EN] Adds a translation for the description of specified category.
 	 * @param lang <br>[ES] idioma de la tracucción. [EN] translation language.
 	 * @param id <br>[ES] identificador de la categoría. [EN] category identifier.
-	 * @param translation <br>[ES] descripción traducida. [EN] translated description.
+	 * @param description <br>[ES] descripción traducida. [EN] translated description.
 	 */
 	public final void addCategoryDescription(Language lang, String id, String description) {
 		id=id.toLowerCase();
@@ -120,7 +120,7 @@ public abstract class LanguageConfiguration {
 	 * [EN] Adds a translation for the description of specified command.
 	 * @param lang <br>[ES] idioma de la tracucción. [EN] translation language.
 	 * @param id <br>[ES] identificador del comando. [EN] command identifier.
-	 * @param translation <br>[ES] descripción traducida. [EN] translated description.
+	 * @param description <br>[ES] descripción traducida. [EN] translated description.
 	 */
 	public final void addCommandDescription(Language lang, String id, String description) {
 		id=id.toLowerCase();
@@ -154,7 +154,7 @@ public abstract class LanguageConfiguration {
 	 * [EN] Adds a text translation.
 	 * @param lang <br>[ES] idioma de la tracucción. [EN] translation language.
 	 * @param id <br>[ES] identificador del texto. [EN] text identifier.
-	 * @param translation <br>[ES] contenido del texto traducido. [EN] translated text content.
+	 * @param value <br>[ES] contenido del texto traducido. [EN] translated text content.
 	 */
 	public final void addStringValue(Language lang, String id, String value) {
 		id=id.toLowerCase();

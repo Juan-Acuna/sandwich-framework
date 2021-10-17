@@ -1,5 +1,24 @@
-[framework]:http://docs.jaxsandwich.com/sandwichcord/latest
-[actual]:http://docs.jaxsandwich.com/sandwichcord/v0.9.x/javadoc/
+<!--
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Copyright 2021 Juan Acuña                                                   *
+ *                                                                             *
+ * Licensed under the Apache License, Version 2.0 (the "License");             *
+ * you may not use this file except in compliance with the License.            *
+ * You may obtain a copy of the License at                                     *
+ *                                                                             *
+ *     http://www.apache.org/licenses/LICENSE-2.0                              *
+ *                                                                             *
+ * Unless required by applicable law or agreed to in writing, software         *
+ * distributed under the License is distributed on an "AS IS" BASIS,           *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.    *
+ * See the License for the specific language governing permissions and         *
+ * limitations under the License.                                              *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ -->
+ 
+[framework]:http://sandwichcord.jaxsandwich.com/
+[actual]:http://docs.jaxsandwich.com/sandwichcord/latest
+[estable]:http://docs.jaxsandwich.com/sandwichcord/v0.8.x/javadoc/
 [web-jax]:http://jaxsandwich.com/
 [jda-github]:https://github.com/DV8FromTheWorld/JDA
 [jda]:https://ci.dv8tion.net/job/JDA/javadoc/
@@ -7,21 +26,33 @@
 [maven]:https://maven.apache.org/guides/mini/guide-3rd-party-jars-local.html  
 
 [PACKET]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/models/packets/Packet.html  
+
 [BOT]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html
+
 [BOTRUNNER]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/BotRunner.html
+
 [COMMANDPACKET]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/models/CommandPacket.html
+
 [MSG-RECEIVED]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html#onMessageReceived(net.dv8tion.jda.api.events.message.MessageReceivedEvent)
+
 [RUN-CMD]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html#runCommand(net.dv8tion.jda.api.events.message.MessageReceivedEvent)
+
 [RUN-BOT]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html#runBot()
+
 [LANG]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/util/Language.html
+
 [INIT-BOT]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/BotRunner.html#singleBotModeInit(com.jaxsandwich.sandwichcord.core.Bot)
+
+[A-CAT]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/annotations/Category.html  
+
+[A-CMD]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/annotations/Command.html  
 
 [JDABUILDER]:https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/JDABuilder.html
 
 > ## AVISO
 > Tanto el framework como la documentación estan aún en desarrollo y podrían variar en su contenido, contener bugs no reportados, o encontrarse incompleta en el caso de la documentación. Por favor tener esto en consideración al momento de su uso.
 
-# Sandwichcord Framework
+# [Sandwichcord Framework][framework]
 ### Un framework simple en Java 8 para el desarrollo de bots para Discord.
 
 Si eres nuevo en el desarrollo de bots para Discord, puede que esto te interese.  
@@ -32,7 +63,8 @@ Este framework contiene lo necesario para desarrollar un bot básico pero útil,
 ###### **Actualmente solo cuenta con soporte para inglés y español*
 
 ## Instalación  
-###### Versión más reciente: [0.9.0(BETA)][actual]  
+###### Versión estable: [0.8.1][estable](BETA)  
+###### Versión más reciente: [0.9.0-r02][actual](BETA)  
 ### Importando en Maven  
 Actualmente no cuenta con soporte a Maven, por lo que si lo utilizas, tendrás que realizar una importación local del archivo `sandwichcord-framework-VERSION.jar` siguiendo las [instucciones para importar archivos .jar en proyecto Maven][maven](en inglés).  
 
@@ -124,30 +156,28 @@ public class MyCategory{
 }
 ```
 La clase [CommandPacket][COMMANDPACKET] ofrece una serie de metodos utiles para programar comandos, además de contener toda la información necesaria, ya que dentro de esta se encuentra el evento que desencadenó el comando, incluyendo información del servidor, el usuario que invocó el comando, entre otros.
-Para más información, revise la [documentación][framework] al respecto.
+Para más información, revise la [documentación][actual] al respecto.
   
 ### 3.- Iniciar la ejecución del Bot
 El bot ya está listo, es un poco básico, pero ya cumple con los componentes requeridos para funcionar. Ahora solo queda encenderlo.  
-Para ejecutar el bot, se necesita crear una clase con el metodo estático main, como en cualquier otro programa Java, donde comenzaremos la ejecución del bot con la ayuda de la clase [BotRunner][BOTRUNNER].  
+Para ejecutar el bot, se necesita crear una clase con el metodo estático main, como en cualquier otro programa Java, donde comenzaremos la ejecución del bot.  
 He aquí un ejemplo de la clase que contiene el metodo main, considerando que la clase MyBot.java y ClasePrincipal.java se encuentran en el mismo package:
 ```java
-import com.jaxsandwich.sandwichcord.core.BotRunner;
-
 public class ClasePrincipal {
 
 	public static void main(String[] args) throws Exception{
 		String discord_token = "Enter your Discord Token here!";
 		MyBot bot = new MyBot(discord_token);
-		BotRunner.init(bot);
 		bot.runBot();
 	}
 }
 ```
-Primero se inicializa el bot con el metodo estático [BotRunner.init(Bot)][INIT-BOT], para que el framework analice el bot y configure todo lo necesario para funcionar. Luego se puede iniciar la ejecución del bot con el metodo [bot.runBot()][RUN-BOT]. Esto último permite hacer configuraciones al objeto [JDABuilder][JDABUILDER] contenido en el bot, ya que una vez este comienza su ejecución, estas no pueden ser aplicadas.  
+Primero se instancia la clase MyBot creada anteriormente y luego se inicia la ejecución del bot con el metodo [bot.runBot()][RUN-BOT]. Esto último permite hacer configuraciones al objeto [JDABuilder][JDABUILDER] contenido en el bot, ya que una vez este comienza su ejecución, estas no pueden ser aplicadas.  
   
 ### 4.- ¡Probar y seguir mejorando!
 El bot ya está listo y corriendo, solo queda invitarlo a tu servidor de Discord y seguir agregándole características.
 
-
+<!--
 ## Ejemplo de bot desarrollado con Sandwichcord Framework
 Un ejemplo de bot desarrollado con este framework es el bot multiuso llamado [Jax Sandwich](https://github.com/Juan-Acuna/jax-sndwch-bot)(no disponible en estos momentos).
+-->

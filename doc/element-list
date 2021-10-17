@@ -2,9 +2,12 @@ com.jaxsandwich.sandwichcord.annotations
 com.jaxsandwich.sandwichcord.annotations.configure
 com.jaxsandwich.sandwichcord.annotations.text
 com.jaxsandwich.sandwichcord.core
+com.jaxsandwich.sandwichcord.core.builders
 com.jaxsandwich.sandwichcord.core.util
 com.jaxsandwich.sandwichcord.core.util.defaultvalues
 com.jaxsandwich.sandwichcord.development
 com.jaxsandwich.sandwichcord.models
+com.jaxsandwich.sandwichcord.models.actionable
 com.jaxsandwich.sandwichcord.models.components
-com.jaxsandwich.sandwichcord.models.discord
+com.jaxsandwich.sandwichcord.models.guild
+com.jaxsandwich.sandwichcord.models.packets

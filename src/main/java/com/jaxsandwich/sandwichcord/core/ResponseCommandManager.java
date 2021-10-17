@@ -104,7 +104,7 @@ public class ResponseCommandManager {
 	 * [EN] Waits for the call of an response command.
 	 * @param responseCmdName <br>[ES] nombre del comando de respuesta. [EN] name of th response command.
 	 * @param event <br>[ES] evento asociado. [EN] associated event.
-	 * @param specteValues <br>[ES] valores que activan el comando de respuesta. [EN] values that activate the response command.
+	 * @param spectedValues <br>[ES] valores que activan el comando de respuesta. [EN] values that activate the response command.
 	 * @param maxSeg <br>[ES] número máximo de segundos de tiempo de espera del comando de respuesta.
 	 * [EN] maximum number of seconds for response command timeout.
 	 * @param maxMsg <br>[ES] número máximo de mensajes recibidos antes de abortar la espera.
@@ -138,7 +138,7 @@ public class ResponseCommandManager {
 	 * [EN] Waits for the call of an response command.
 	 * @param responseCmdName <br>[ES] nombre del comando de respuesta. [EN] name of th response command.
 	 * @param event <br>[ES] evento asociado. [EN] associated event.
-	 * @param specteValues <br>[ES] valores que activan el comando de respuesta. [EN] values that activate the response command.
+	 * @param spectedValues <br>[ES] valores que activan el comando de respuesta. [EN] values that activate the response command.
 	 * @param maxSeg <br>[ES] número máximo de segundos de tiempo de espera del comando de respuesta.
 	 * [EN] maximum number of seconds for response command timeout.
 	 * @param maxMsg <br>[ES] número máximo de mensajes recibidos antes de abortar la espera.
@@ -172,7 +172,7 @@ public class ResponseCommandManager {
 	 * [EN] Waits for the call of an response command.
 	 * @param responseCmdName <br>[ES] nombre del comando de respuesta. [EN] name of th response command.
 	 * @param event <br>[ES] evento asociado. [EN] associated event.
-	 * @param specteValues <br>[ES] valores que activan el comando de respuesta. [EN] values that activate the response command.
+	 * @param spectedValues <br>[ES] valores que activan el comando de respuesta. [EN] values that activate the response command.
 	 * @param maxSeg <br>[ES] número máximo de segundos de tiempo de espera del comando de respuesta.
 	 * [EN] maximum number of seconds for response command timeout.
 	 * @param maxMsg <br>[ES] número máximo de mensajes recibidos antes de abortar la espera.
@@ -206,7 +206,7 @@ public class ResponseCommandManager {
 	 * [EN] Waits for the call of an response command.
 	 * @param responseCmdName <br>[ES] nombre del comando de respuesta. [EN] name of th response command.
 	 * @param event <br>[ES] evento asociado. [EN] associated event.
-	 * @param specteValues <br>[ES] valores que activan el comando de respuesta. [EN] values that activate the response command.
+	 * @param spectedValues <br>[ES] valores que activan el comando de respuesta. [EN] values that activate the response command.
 	 * @param maxSeg <br>[ES] número máximo de segundos de tiempo de espera del comando de respuesta.
 	 * [EN] maximum number of seconds for response command timeout.
 	 * @param maxMsg <br>[ES] número máximo de mensajes recibidos antes de abortar la espera.
