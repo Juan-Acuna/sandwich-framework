@@ -67,8 +67,8 @@
   <distributionManagement>
   	<repository>
      <id>github</id>
-     <name>GitHub Sandwich Bots Team Apache Maven Packages</name>
-     <url>https://maven.pkg.github.com/sandwichbotsteam/sandwichcord-framework</url>
+     <name>GitHub Jax Sandwich Apache Maven Packages</name>
+     <url>https://maven.pkg.github.com/jaxsandwich/sandwichcord-framework</url>
   	</repository>
   </distributionManagement>
 </project>
