@@ -26,6 +26,7 @@ import com.jaxsandwich.sandwichcord.core.util.Language;
  * [ES] Allows to organize the texts inside the application.
  * @author Juancho
  * @version 1.2
+ * @since 0.5.0
  */
 public class Values {
 	/**
@@ -41,6 +42,10 @@ public class Values {
 	/**
 	 * [ES] Devuelve el valor correspondiente al identificador según el idioma.<br>
 	 * [EN] Returns the corresponding value for the identifier by the language.
+	 * @param id <br>[ES] identificador del texto. [EN] identifier of text.
+	 * @param lang <br>[ES] idioma requerido. [EN] required language.
+	 * @return [ES] el texto traducido. Devuelve texto vacío si no se encuentra alguno.<br>
+	 * [EN] the translated text. Returns empty text if any not found.
 	 */
 	public static String value(String id, Language lang) {
 		Map<Language, String> s = values.get(id);
@@ -51,6 +56,11 @@ public class Values {
 	/**
 	 * [ES] Devuelve el valor correspondiente al identificador según el idioma formateando los argumentos.<br>
 	 * [EN] Returns the corresponding value for the identifier by the language formatting the arguments.
+	 * @param id <br>[ES] identificador del texto. [EN] identifier of text.
+	 * @param lang <br>[ES] idioma requerido. [EN] required language.
+	 * @param args <br>[ES] argumentos a ser formateados. [EN] arguments that will be formated.
+	 * @return [ES] el texto traducido. Devuelve texto vacío si no se encuentra alguno.<br>
+	 * [EN] the translated text. Returns empty text if any not found.
 	 */
 	public static String formatedValue(String id, Language lang, Object...args) {
 		Map<Language, String> s = values.get(id);
@@ -61,6 +71,11 @@ public class Values {
 	/**
 	 * [ES] Devuelve el valor correspondiente al identificador según el idioma formateado a la cadena ingresada.<br>
 	 * [EN] Returns the corresponding value for the identifier by the language formatting it to the input String.
+	 * @param id <br>[ES] identificador del texto. [EN] identifier of text.
+	 * @param lang <br>[ES] idioma requerido. [EN] required language.
+	 * @param format <br>[ES] formato al que se formateará el texto. [EN] format which the text will be formated for.
+	 * @return [ES] el texto traducido. Devuelve texto vacío si no se encuentra alguno.<br>
+	 * [EN] the translated text. Returns empty text if any not found.
 	 */
 	public static String valueForFormat(String id, Language lang, String format) {
 		Map<Language, String> s = values.get(id);
@@ -71,6 +86,7 @@ public class Values {
 	/**
 	 * [ES] Inicializa los valores.<br>
 	 * [EN] Initialices the values.
+	 * @param v <br>[ES] mapa de traducciones. [EN] map of translations.
 	 */
 	protected static void initialize(Map<String, Map<Language, String>> v) {
 		if(Values.initialized)

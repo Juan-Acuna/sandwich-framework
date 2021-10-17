@@ -28,10 +28,15 @@ import java.lang.annotation.Target;
  * [ES] Nombre traducido en el idioma configurado para el elemento actual.<br>
  * [EN] Translated name to the configured language for the actual element.
  * @author Juan Acuña
+ * @since 0.3.0
  * @version 1.1<br>
  * [ES] Requiere que el campo contenga una anotacion de tipo {@link CategoryID}, {@link CommandID} o {@link OptionID}.<br>
  * [EN] Requires the field to have an annotation of type {@link CategoryID}, {@link CommandID} o {@link OptionID}.
  */
 public @interface TranslatedName {
+	/**
+	 * [ES] Nombre del objeto en el idioma definido.<br>
+	 * [EN] Name of the object in the defined language.
+	 */
 	String value();
 }

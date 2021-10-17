@@ -28,10 +28,15 @@ import java.lang.annotation.Target;
  * [ES] Identificadores de los comandos en los que esta presente esta opción.<br>
  * [ES] Identifiers of the commands where this option is present.
  * @author Juan Acuña
+ * @since 0.3.1
  * @version 1.1<br>
  * [ES] Requiere que el campo contenga una anotacion del tipo {@link OptionID}<br>
  * [ES] Requires the field to have an annotation of type {@link OptionID}
  */
 public @interface MultiCommandIDOption {
+	/**
+	 * [ES] Identificadores de comandos.<br>
+	 * [EN] Identifiers of commands.
+	 */
 	String[] value();
 }

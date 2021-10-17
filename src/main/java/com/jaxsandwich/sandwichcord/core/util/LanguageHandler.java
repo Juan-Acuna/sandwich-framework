@@ -20,6 +20,7 @@ package com.jaxsandwich.sandwichcord.core.util;
  * [EN] Tools for language handling.
  * @author Juancho
  * @version 1.2
+ * @since 0.3.0
  */
 public class LanguageHandler {
 	/**
@@ -27,19 +28,12 @@ public class LanguageHandler {
 	 * [EN] Returns the language without any associated country.
 	 */
 	public static Language getLanguageParent(Language lang) {
-		if(lang==null) {
+		if(lang==null)
 			return null;
-		}
-		switch(lang) {
-			case ES_MX:
-			case ES_ES:
-				return Language.ES;
-			case EN_US:
-			case EN_GB:
-				return Language.EN;
-			default:
-				return lang;
-		}
+		String l = lang.toString();
+		if(l.length()==2)
+			return lang;
+		return Language.valueOf(l.substring(0,2));
 	}
 	/**
 	 * [ES] Intenta encontrar el lenguaje mas adecuado entre las opciones disponibles.<br>

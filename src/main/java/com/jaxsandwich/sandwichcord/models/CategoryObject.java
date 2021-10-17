@@ -28,6 +28,7 @@ import com.jaxsandwich.sandwichcord.core.util.LanguageHandler;
  * Represents a Category.
  * @author Juancho
  * @version 2.0
+ * @since 0.0.1
  */
 public class CategoryObject implements Comparable<CategoryObject>{
 	private static Map<String, CategoryObject> cont = Collections.synchronizedMap(new HashMap<String, CategoryObject>());
@@ -38,6 +39,8 @@ public class CategoryObject implements Comparable<CategoryObject>{
 	private boolean visible;
 	private boolean enabled;
 	private boolean isSpecial;
+	private CommandMode commandMode;
+	private String[] guilds = null;
 	private ArrayList<CommandObject> commands;
 	
 
@@ -56,21 +59,24 @@ public class CategoryObject implements Comparable<CategoryObject>{
 	public static int getCommandCount() {
 		return cont.size();
 	}
-	
-	public CategoryObject(Language lang, String id){
+	public CategoryObject(Language lang, String id, CommandMode commandMode, String[] guilds){
 		this.name=new HashMap<Language,String>();
 		this.desc=new HashMap<Language,String>();
-		this.id=id;
+		this.id=id.toLowerCase();
 		this.name.put(lang, id);
 		commands = new ArrayList<CommandObject>();
+		this.commandMode=commandMode;
+		this.guilds=guilds;
 	}
-	public CategoryObject(Language lang, String id, String desc) {
+	public CategoryObject(Language lang, String id, String desc, CommandMode commandMode, String[] guilds) {
 		this.name=new HashMap<Language,String>();
 		this.desc=new HashMap<Language,String>();
-		this.id=id;
+		this.id=id.toLowerCase();
 		this.name.put(lang, id);
 		this.desc.put(lang, desc);
 		commands = new ArrayList<CommandObject>();
+		this.commandMode=commandMode;
+		this.guilds=guilds;
 	}
 	
 	public String getId() {
@@ -143,6 +149,12 @@ public class CategoryObject implements Comparable<CategoryObject>{
 	}
 	public void sortCommands() {
 		Collections.sort(commands);
+	}
+	public CommandMode getCommandMode() {
+		return commandMode;
+	}
+	public String[] getGuilds() {
+		return guilds;
 	}
 	@Override
 	public int hashCode() {

@@ -37,6 +37,9 @@ import java.lang.annotation.Target;
 /**
  * [ES] El item aún esta en desarrollo y no funciona actualmente.
  * [EN] The item is in development yet and actualy doesn't work.
+ * @author Juan Acuña
+ * @version 1.0
+ * @since 0.8.0
  */
 public @interface InDevelopment {
 

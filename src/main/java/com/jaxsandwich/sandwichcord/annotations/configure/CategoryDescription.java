@@ -28,9 +28,13 @@ import java.lang.annotation.Target;
  * [ES] Indica que el campo es la descripción de la categoría.<br>
  * [EN] Indicates that the field is the description of the category.
  * @author Juan Acuña
+ * @since 0.3.0
  * @version 1.1<br>
  * [ES] Requiere que el campo contenga una anotacion del tipo {@link CategoryID}<br>
  * [EN] Requires the field to have an annotation of type {@link CategoryID}
+ * @deprecated <br>
+ * [ES] En su lugar, use {@link com.jaxsandwich.sandwichcord.core.LanguageConfiguration}.<br>
+ * [EN] Instead, use {@link com.jaxsandwich.sandwichcord.core.LanguageConfiguration}.
  */
 @Deprecated
 public @interface CategoryDescription {

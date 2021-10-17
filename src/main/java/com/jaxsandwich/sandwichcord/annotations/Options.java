@@ -29,6 +29,7 @@ import java.lang.annotation.Target;
  * [EN] Required by others annotations.
  * @author Juan Acuña
  * @version 1.1
+ * @since 0.0.1
  */
 public @interface Options {
 	Option[] value();

@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
  * Represents an Option.
  * @author Juancho
  * @version 2.0
+ * @since 0.0.1
  */
 public class OptionObject implements Comparable<OptionObject>{
 	private String id;
@@ -37,17 +38,19 @@ public class OptionObject implements Comparable<OptionObject>{
 	private boolean noStandar;
 	private boolean required;
 	private OptionType type;
-	public OptionObject(Language lang, String id, String desc, String[] alias, boolean enabled, boolean visible, boolean nostandar) {
+	public OptionObject(Language lang, String id, String desc, String[] alias, boolean enabled, boolean visible, boolean nostandar, boolean required, OptionType type) {
 		this.name = new HashMap<Language, String>();
 		this.desc= new HashMap<Language, String>();
 		this.alias = new HashMap<Language, String[]>();
-		this.id=id;
+		this.id=id.toLowerCase();
 		this.name.put(lang, id);
 		this.desc.put(lang, desc);
 		this.alias.put(lang, alias);
 		this.enabled = enabled;
 		this.visible=visible;
 		this.noStandar=nostandar;
+		this.required=required;
+		this.type=type;
 	}
 	public String getId() {
 		return id;
@@ -126,7 +129,7 @@ public class OptionObject implements Comparable<OptionObject>{
 	}
 	@Override
 	public int compareTo(OptionObject o) {
-		return id.compareTo(o.id);
+		return id.compareTo(o.id) + (required?50:-50);
 	}
 	@Override
 	public int hashCode() {

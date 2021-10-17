@@ -24,16 +24,24 @@ import java.util.Map;
 
 import com.jaxsandwich.sandwichcord.core.util.Language;
 import com.jaxsandwich.sandwichcord.core.util.LanguageHandler;
+import com.jaxsandwich.sandwichcord.models.actionable.ActionableType;
+import com.jaxsandwich.sandwichcord.models.actionable.IActionable;
+import com.jaxsandwich.sandwichcord.models.packets.CommandPacket;
+import com.jaxsandwich.sandwichcord.models.packets.ReplyablePacket;
+import com.jaxsandwich.sandwichcord.models.packets.ResponseCommandPacket;
+import com.jaxsandwich.sandwichcord.models.packets.SlashCommandPacket;
 /**
- * Representa un Comando.
- * Represents a Command.
+ * Representa un Comando clásico.
+ * Represents a clasic Command.
  * @author Juancho
- * @version 2.0
+ * @version 2.1
+ * @since 0.0.1
  */
-public class CommandObject extends CommandBase implements Comparable<CommandObject>{
+public class CommandObject extends CommandBase implements Comparable<CommandObject>, IActionable<ReplyablePacket<?>>{
 	private static Map<String, CommandObject> cont = Collections.synchronizedMap(new HashMap<String, CommandObject>());
 	protected HashMap<Language, String> desc = null;
 	protected CategoryObject category = null;
+	private CommandMode commandMode;
 	
 	public static final void compute(CommandObject command) {
 		cont.put(command.id.toLowerCase(), command);
@@ -50,7 +58,7 @@ public class CommandObject extends CommandBase implements Comparable<CommandObje
 	public static final int getCommandCount() {
 		return cont.size();
 	}
-	public CommandObject(Language lang, String id, CategoryObject category, Method source) {
+	public CommandObject(Language lang, String id, CategoryObject category, Method source, CommandMode commandMode) {
 		super(id);
 		this.name=new HashMap<Language, String>();
 		this.desc=new HashMap<Language, String>();
@@ -60,6 +68,8 @@ public class CommandObject extends CommandBase implements Comparable<CommandObje
 		this.action = source;
 		options = new ArrayList<OptionObject>();
 		category.addCommand(this);
+		this.commandMode=commandMode;
+		this.path = this.category.getId() + "/" + this.id;
 	}
 	public String getDesc(Language lang) {
 		if(desc.containsKey(lang)) {
@@ -81,12 +91,15 @@ public class CommandObject extends CommandBase implements Comparable<CommandObje
 	public void setCategory(CategoryObject category) {
 		this.category = category;
 	}
-	@Override
-	public int compareTo(CommandObject arg0) {
-		return id.compareTo(arg0.id);
+	public CommandMode getCommandMode() {
+		return commandMode;
 	}
 	public void sortOptions() {
 		Collections.sort(options);
+	}
+	@Override
+	public int compareTo(CommandObject arg0) {
+		return id.compareTo(arg0.id);
 	}
 	@Override
 	public int hashCode() {
@@ -110,5 +123,21 @@ public class CommandObject extends CommandBase implements Comparable<CommandObje
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
+	}
+	@Override
+	public void execute(ReplyablePacket<?> packet) throws Exception{
+		if(packet instanceof CommandPacket) {
+			this.action.invoke(null, (CommandPacket)packet);
+		}else if(packet instanceof SlashCommandPacket){
+			this.action.invoke(null, (SlashCommandPacket)packet);
+		}else if(packet instanceof ResponseCommandPacket){
+			this.action.invoke(null, (ResponseCommandPacket)packet);
+		}else {
+			this.action.invoke(null, packet);
+		}
+	}
+	@Override
+	public ActionableType getActionableType() {
+		return ActionableType.TEXT_COMMAND;
 	}
 }

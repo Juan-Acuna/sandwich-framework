@@ -23,17 +23,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.jaxsandwich.sandwichcord.models.ResponseCommandPacket;
+import com.jaxsandwich.sandwichcord.core.builders.ResponsePacketBuilder;
 import com.jaxsandwich.sandwichcord.models.ResponseCommandObject;
-import com.jaxsandwich.sandwichcord.models.discord.GuildConfig;
+import com.jaxsandwich.sandwichcord.models.guild.GuildConfig;
+import com.jaxsandwich.sandwichcord.models.packets.ResponseCommandPacket;
 
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 /**
- * [ES] Manejador de Comandos extra.<br>
- * [ES] Manager of Extra commands.
+ * [ES] Manejador de comandos de respuesta.<br>
+ * [ES] Manager of response commands.
  * @author Juancho
- * @version 1.3
+ * @since 0.3.0
+ * @version 1.4
  */
 public class ResponseCommandManager {
 	/**
@@ -70,7 +76,7 @@ public class ResponseCommandManager {
 	 * [ES] Contenedor de {@link ResponseListener}.<br>
 	 * [EN] Container of {@link ResponseListener}.
 	 */
-	private static Map<MessageChannel, List<ResponseListener>> threads = Collections.synchronizedMap(new HashMap<MessageChannel, List<ResponseListener>>());
+	private static Map<MessageChannel, List<ResponseListener<?>>> threads = Collections.synchronizedMap(new HashMap<MessageChannel, List<ResponseListener<?>>>());
 	/**
 	 * [ES] {@link Bot} asociado a este gestor.<br>
 	 * [EN] {@link Bot} associated to this manager.
@@ -84,28 +90,41 @@ public class ResponseCommandManager {
 		this.bot = bot;
 	}
 	/**
-	 * [ES] Inicializa un gestor de comandos extra.<br>
-	 * [EN] Initializes an extra commands manager.
+	 * [ES] Inicializa un gestor de comandos de respuesta.<br>
+	 * [EN] Initializes an response commands manager
+	 * @param bot <br>[ES] bot que se asociará este ResponseCommandManager. 
+	 * [EN] bot who will be associated with this ResponseCommandManager.
+	 * @return [ES] instancia de ResponseCommandManager. [EN] instance of ResponseCommandManager.
 	 */
 	protected static ResponseCommandManager startService(Bot bot) {
 		return new ResponseCommandManager(bot);
 	}
 	/**
-	 * [ES] Espera por la ejecución de un comando extra.<br>
-	 * [EN] Waits for the execution of an extra command.
+	 * [ES] Espera por la llamada de un comando de respuesta.<br>
+	 * [EN] Waits for the call of an response command.
+	 * @param responseCmdName <br>[ES] nombre del comando de respuesta. [EN] name of th response command.
+	 * @param event <br>[ES] evento asociado. [EN] associated event.
+	 * @param specteValues <br>[ES] valores que activan el comando de respuesta. [EN] values that activate the response command.
+	 * @param maxSeg <br>[ES] número máximo de segundos de tiempo de espera del comando de respuesta.
+	 * [EN] maximum number of seconds for response command timeout.
+	 * @param maxMsg <br>[ES] número máximo de mensajes recibidos antes de abortar la espera.
+	 * [EN] maximum number of received messages before abort waiting.
+	 * @param args <br>[ES] argumentos extra que necesite el comando. [EN] extra arguments the command needs.
+	 * @return [ES] instancia del ResponseListener.<br>
+	 * [EN] instance of the ResponseListener.
 	 */
-	public ResponseListener waitForResponse(String responseCmdName, MessageReceivedEvent event, String[] spectedValues, int maxSeg, int maxMsg, Object...args) {
+	public ResponseListener<MessageReceivedEvent> waitForResponse(String responseCmdName, MessageReceivedEvent event, String[] spectedValues, int maxSeg, int maxMsg, Object...args) {
 		ResponseCommandObject m = ResponseCommandObject.find(responseCmdName);
 		GuildConfig g = null;
 		if(event.isFromGuild()) {
-			g = bot.getGuildsManager().getConfig(event.getGuild().getIdLong());
+			g = bot.getGuildConfigManager().getConfig(event.getGuild().getIdLong());
 		}
-		CommandPacketBuilder cpb = new CommandPacketBuilder(bot, g, event);
+		ResponsePacketBuilder<MessageReceivedEvent> cpb = new ResponsePacketBuilder<MessageReceivedEvent>(bot, g, event, m);
 		cpb.setArgs(args);
-		ResponseListener o = new ResponseListener(m,cpb, spectedValues, maxSeg, maxMsg);
-		List<ResponseListener> l = threads.get(event.getChannel());
+		ResponseListener<MessageReceivedEvent> o = new ResponseListener<MessageReceivedEvent>(m,cpb, spectedValues, maxSeg, maxMsg);
+		List<ResponseListener<?>> l = threads.get(event.getChannel());
 		if(l==null) {
-			l = Collections.synchronizedList(new ArrayList<ResponseListener>());
+			l = Collections.synchronizedList(new ArrayList<ResponseListener<?>>());
 			l.add(o);
 			threads.put(event.getChannel(), l);
 		}else {
@@ -115,50 +134,148 @@ public class ResponseCommandManager {
 		return o;
 	}
 	/**
-	 * [ES] Revisa si se llama a algun comando extra.<br>
-	 * [EN] Checks if an extra command is called.
+	 * [ES] Espera por la llamada de un comando de respuesta.<br>
+	 * [EN] Waits for the call of an response command.
+	 * @param responseCmdName <br>[ES] nombre del comando de respuesta. [EN] name of th response command.
+	 * @param event <br>[ES] evento asociado. [EN] associated event.
+	 * @param specteValues <br>[ES] valores que activan el comando de respuesta. [EN] values that activate the response command.
+	 * @param maxSeg <br>[ES] número máximo de segundos de tiempo de espera del comando de respuesta.
+	 * [EN] maximum number of seconds for response command timeout.
+	 * @param maxMsg <br>[ES] número máximo de mensajes recibidos antes de abortar la espera.
+	 * [EN] maximum number of received messages before abort waiting.
+	 * @param args <br>[ES] argumentos extra que necesite el comando. [EN] extra arguments the command needs.
+	 * @return [ES] instancia del ResponseListener.<br>
+	 * [EN] instance of the ResponseListener.
+	 */
+	public ResponseListener<SlashCommandEvent> waitForResponse(String responseCmdName, SlashCommandEvent event, String[] spectedValues, int maxSeg, int maxMsg, Object...args) {
+		ResponseCommandObject m = ResponseCommandObject.find(responseCmdName);
+		GuildConfig g = null;
+		if(event.isFromGuild()) {
+			g = bot.getGuildConfigManager().getConfig(event.getGuild().getIdLong());
+		}
+		ResponsePacketBuilder<SlashCommandEvent> cpb = new ResponsePacketBuilder<SlashCommandEvent>(bot, g, event, m);
+		cpb.setArgs(args);
+		ResponseListener<SlashCommandEvent> o = new ResponseListener<SlashCommandEvent>(m,cpb, spectedValues, maxSeg, maxMsg);
+		List<ResponseListener<?>> l = threads.get(event.getChannel());
+		if(l==null) {
+			l = Collections.synchronizedList(new ArrayList<ResponseListener<?>>());
+			l.add(o);
+			threads.put(event.getChannel(), l);
+		}else {
+			threads.get(event.getChannel()).add(o);
+		}
+		new Thread(o).start();
+		return o;
+	}
+	/**
+	 * [ES] Espera por la llamada de un comando de respuesta.<br>
+	 * [EN] Waits for the call of an response command.
+	 * @param responseCmdName <br>[ES] nombre del comando de respuesta. [EN] name of th response command.
+	 * @param event <br>[ES] evento asociado. [EN] associated event.
+	 * @param specteValues <br>[ES] valores que activan el comando de respuesta. [EN] values that activate the response command.
+	 * @param maxSeg <br>[ES] número máximo de segundos de tiempo de espera del comando de respuesta.
+	 * [EN] maximum number of seconds for response command timeout.
+	 * @param maxMsg <br>[ES] número máximo de mensajes recibidos antes de abortar la espera.
+	 * [EN] maximum number of received messages before abort waiting.
+	 * @param args <br>[ES] argumentos extra que necesite el comando. [EN] extra arguments the command needs.
+	 * @return [ES] instancia del ResponseListener.<br>
+	 * [EN] instance of the ResponseListener.
+	 */
+	public ResponseListener<ButtonClickEvent> waitForResponse(String responseCmdName, ButtonClickEvent event, String[] spectedValues, int maxSeg, int maxMsg, Object...args) {
+		ResponseCommandObject m = ResponseCommandObject.find(responseCmdName);
+		GuildConfig g = null;
+		if(event.isFromGuild()) {
+			g = bot.getGuildConfigManager().getConfig(event.getGuild().getIdLong());
+		}
+		ResponsePacketBuilder<ButtonClickEvent> cpb = new ResponsePacketBuilder<ButtonClickEvent>(bot, g, event, m);
+		cpb.setArgs(args);
+		ResponseListener<ButtonClickEvent> o = new ResponseListener<ButtonClickEvent>(m,cpb, spectedValues, maxSeg, maxMsg);
+		List<ResponseListener<?>> l = threads.get(event.getChannel());
+		if(l==null) {
+			l = Collections.synchronizedList(new ArrayList<ResponseListener<?>>());
+			l.add(o);
+			threads.put(event.getChannel(), l);
+		}else {
+			threads.get(event.getChannel()).add(o);
+		}
+		new Thread(o).start();
+		return o;
+	}
+	/**
+	 * [ES] Espera por la llamada de un comando de respuesta.<br>
+	 * [EN] Waits for the call of an response command.
+	 * @param responseCmdName <br>[ES] nombre del comando de respuesta. [EN] name of th response command.
+	 * @param event <br>[ES] evento asociado. [EN] associated event.
+	 * @param specteValues <br>[ES] valores que activan el comando de respuesta. [EN] values that activate the response command.
+	 * @param maxSeg <br>[ES] número máximo de segundos de tiempo de espera del comando de respuesta.
+	 * [EN] maximum number of seconds for response command timeout.
+	 * @param maxMsg <br>[ES] número máximo de mensajes recibidos antes de abortar la espera.
+	 * [EN] maximum number of received messages before abort waiting.
+	 * @param args <br>[ES] argumentos extra que necesite el comando. [EN] extra arguments the command needs.
+	 * @return [ES] instancia del ResponseListener.<br>
+	 * [EN] instance of the ResponseListener.
+	 */
+	public ResponseListener<GuildJoinEvent> waitForResponse(String responseCmdName, GuildJoinEvent event, String[] spectedValues, int maxSeg, int maxMsg, Object...args) {
+		ResponseCommandObject m = ResponseCommandObject.find(responseCmdName);
+		ResponsePacketBuilder<GuildJoinEvent> cpb = new ResponsePacketBuilder<GuildJoinEvent>(bot, null, event, m);
+		cpb.setArgs(args);
+		ResponseListener<GuildJoinEvent> o = new ResponseListener<GuildJoinEvent>(m,cpb, spectedValues, maxSeg, maxMsg);
+		List<ResponseListener<?>> l = threads.get(event.getGuild().getDefaultChannel());
+		if(l==null) {
+			l = Collections.synchronizedList(new ArrayList<ResponseListener<?>>());
+			l.add(o);
+			threads.put(event.getGuild().getDefaultChannel(), l);
+		}else {
+			threads.get(event.getGuild().getDefaultChannel()).add(o);
+		}
+		new Thread(o).start();
+		return o;
+	}
+	/**
+	 * [ES] Revisa si se llama a algún comando de respuesta.<br>
+	 * [EN] Checks if any response command is called.
 	 */
 	public void CheckExtras(MessageReceivedEvent event) {
 		if(threads.size()<=0)
 			return;
 		if(event.getAuthor().getId().equals(bot.getSelfUser().getId()))
 			return;
-		List<ResponseListener> l = threads.get(event.getChannel());
+		List<ResponseListener<?>> l = threads.get(event.getChannel());
 		if(l == null) {
 			return;
 		}
-		for(ResponseListener o : l) {
+		for(ResponseListener<?> o : l) {
 			o.PutMessage(event);
 		}
 	}
 	/**
-	 * [ES] Objeto que se encarga de escuchar y ejecutar llamadas a un comando extra.<br>
-	 * [EN] Object wich listen an executes calls for an extra command.
+	 * [ES] Objeto que se encarga de escuchar y ejecutar llamadas a un comando de respuesta.<br>
+	 * [EN] Object wich listen an executes calls for a response command.
 	 */
-	public class ResponseListener implements Runnable{
+	public class ResponseListener<E extends GenericEvent> implements Runnable{
 		/**
 		 * [ES] Arreglo con todas las posibles entradas a las que el ResponseListener debe responder.<br>
 		 * [EN] Array with all the inputs which the ResponseListener have to response.
 		 */
 		public String[] spectedValues = null;
 		/**
-		 * [ES] Cantidad máxima de mensajes recibidos en espera por la llamada al comando extra antes de abortar.<br>
-		 * [EN] Max count of received messages while is waiting for the call for the extra command before abort.
+		 * [ES] Cantidad máxima de mensajes recibidos en espera por la llamada al comando de respuesta antes de abortar.<br>
+		 * [EN] Max count of received messages while is waiting for the call for the response command before abort.
 		 */
 		public int maxMsg = 5;
 		/**
-		 * [ES] Tiempo de espera(en segundos) para la llamada del comando extra.<br>
-		 * [EN] Time of wait(in seconds) for a call for the extra command.
+		 * [ES] Tiempo de espera(en segundos) para la llamada del comando de respuesta.<br>
+		 * [EN] Time of wait(in seconds) for a call for the response command.
 		 */
 		public int maxSeg = 60;
 		/**
-		 * [ES] Representa el {@link MessageReceivedEvent} asociado al comando extra.<br>
-		 * [EN] Represents the {@link MessageReceivedEvent} associated to the extra command.
+		 * [ES] Representa el {@link MessageReceivedEvent} asociado al comando de respuesta.<br>
+		 * [EN] Represents the {@link MessageReceivedEvent} associated to the response command.
 		 */
 		private MessageReceivedEvent event = null;
 		/**
-		 * [ES] Representa al objeto del comando extra.<br>
-		 * [EN] Represents the extra command object.
+		 * [ES] Representa al objeto del comando de respuesta.<br>
+		 * [EN] Represents the response command object.
 		 */
 		private ResponseCommandObject action;
 		/**
@@ -167,25 +284,22 @@ public class ResponseCommandManager {
 		 */
 		private int msgs = 0;
 		/**
-		 * [ES] Constructor de {@link ResponseCommandPacket} associado al comando extra.<br>
-		 * [EN] Builder of {@link ResponseCommandPacket} associated to the extra command.
+		 * [ES] Constructor de {@link ResponseCommandPacket} associado al comando de respuesta.<br>
+		 * [EN] Builder of {@link ResponseCommandPacket} associated to the response command.
 		 */
-		private CommandPacketBuilder builder;
+		private ResponsePacketBuilder<E> builder;
 		/**
 		 * [ES] Constructor del {@link ResponseListener}<br>
 		 * [EN] Constructor of the {@link ResponseListener}
+		 * @param action <br>[ES] ResponseCommandObject asociado. [EN] associated ResponseCommandObject.
+		 * @param builder <br>[ES] builder previamente configurado. [EN] preset builder.
+		 * @param specteValues <br>[ES] valores que activan el comando de respuesta. [EN] values that activate the response command.
+		 * @param maxSeg <br>[ES] número máximo de segundos de tiempo de espera del comando de respuesta.
+		 * [EN] maximum number of seconds for response command timeout.
+		 * @param maxMsg <br>[ES] número máximo de mensajes recibidos antes de abortar la espera.
+		 * [EN] maximum number of received messages before abort waiting. 
 		 */
-		protected ResponseListener(ResponseCommandObject action, ResponseCommandPacket packet,String[] spectedValues, int maxSeg, int maxMsg) {
-			this.spectedValues=spectedValues;
-			this.maxSeg=maxSeg;
-			this.maxMsg=maxMsg;
-			this.action = action;
-		}
-		/**
-		 * [ES] Constructor del {@link ResponseListener}<br>
-		 * [EN] Constructor of the {@link ResponseListener}
-		 */
-		protected ResponseListener(ResponseCommandObject action, CommandPacketBuilder builder,String[] spectedValues, int maxSeg, int maxMsg) {
+		protected ResponseListener(ResponseCommandObject action,  ResponsePacketBuilder<E> builder,String[] spectedValues, int maxSeg, int maxMsg) {
 			this.spectedValues=spectedValues;
 			this.maxSeg=maxSeg;
 			this.maxMsg=maxMsg;
@@ -193,8 +307,9 @@ public class ResponseCommandManager {
 			this.builder=builder;
 		}
 		/**
-		 * [ES] Devuelve el objto que representa al comando extra.<br>
-		 * [EN] Returns the object that represents the extra command.
+		 * [ES] Devuelve el objto que representa al comando de respuesta.<br>
+		 * [EN] Returns the object that represents the response command.
+		 * @return [ES] instancia de ResponseCommandObject.<br>[EN] instance of ResponseCommandObject.
 		 */
 		protected ResponseCommandObject getAction() {
 			return action;
@@ -202,24 +317,35 @@ public class ResponseCommandManager {
 		/**
 		 * [ES] Configura el objto que representa al comando extra.<br>
 		 * [EN] Sets the object that represents the extra command.
+		 * @param action <br>[ES] ResponseCommandObject a ser asignado. [EN] ResponseCommandObject that will be set.
+		 * @return [ES] instancia de este ResponseListener.<br>[EN] instance of this ResponseListener.
 		 */
-		protected ResponseListener setAction(ResponseCommandObject action) {
+		protected ResponseListener<E> setAction(ResponseCommandObject action) {
 			this.action = action;
 			return this;
 		}
+		/**
+		 * [ES] Implentación de metodo run.<br>
+		 * [EN]Implementation of run method.
+		 */
 		@Override
 		public void run(){
 			float s = 0f;
 			msgs = 0;
 			boolean b = true;
-			ResponseCommandPacket packet = builder.buildExtraPacket();
+			ResponseCommandPacket packet = builder.build();
 			while(maxSeg > s && maxMsg > msgs && b) {
-				action.eachRun(packet);
+				action.runWaitingExecution(packet);
 				if(Compare(event)) {
 					builder.setMessageReceivedEvent(event);
-					packet = builder.buildExtraPacket();
-					action.Run(packet);
-					b = false;
+					packet = builder.build();
+					try {
+						action.execute(packet);
+						b = false;
+					} catch (Exception e) {
+						e.printStackTrace();
+						break;
+					}
 				}
 				s += 0.5f;
 				try {
@@ -229,16 +355,17 @@ public class ResponseCommandManager {
 				}
 			}
 			if(!b) {
-				action.afterRun(packet);
+				action.runSuccessExecution(packet);
 			}else {
-				action.NoRun(packet);
+				action.runFailedExecution(packet);
 			}
-			action.finallyRun(packet);
+			action.runFinallyExecution(packet);
 			threads.get(packet.getChannel()).remove(this);
 		}
 		/**
 		 * [ES] Metodo que captura el evento y lo inserta en el listener.<br>
 		 * [EN] Method wich catches the event and puts it into the listener.
+		 * @param event <br>[ES] evento analizado. [EN] analyzed event.
 		 */
 		protected void PutMessage(MessageReceivedEvent event) {
 			this.event=event;
@@ -251,6 +378,7 @@ public class ResponseCommandManager {
 		/**
 		 * [ES] Compara la entrada con las entradas esperadas.<br>
 		 * [EN] Compares the input with the spected inputs.
+		 * @param event <br>[ES] evento que contiene el mensaje. [EN] event which contains the message.
 		 */
 		private boolean Compare(MessageReceivedEvent event) {
 			if(event == null) {
@@ -275,48 +403,56 @@ public class ResponseCommandManager {
 			return false;
 		}
 		/**
-		 * [ES] Permite agregar argumentos 'Each'.<br>
-		 * [EN] Allows to put 'Each' arguments.
+		 * [ES] Permite agregar argumentos al metodo de espera de un comando de sepuesta.<br>
+		 * [EN] Allows to put arguments for the execution of the waiting method of a response command.
+		 * @param args <br>[ES] argumentos extras para la ejecución. [EN] extra arguments for execution.
 		 */
-		public ResponseListener setEachArrgs(Object...args) {
-			this.builder.setEachArgs(args);
+		public ResponseListener<E> setWaitingExecutionArgs(Object...args) {
+			this.builder.setWaitingExecutionArgs(args);
 			return this;
 		}
 		/**
-		 * [ES] Permite agregar argumentos 'After'.<br>
-		 * [EN] Allows to put 'After' arguments.
+		 * [ES] Permite agregar argumentos al metodo de ejecución exitosa de un comando de respuesta.<br>
+		 * [EN] Allows to put arguments to the success execution method of a response command.
+		 * @param args <br>[ES] argumentos extras para la ejecución. [EN] extra arguments for execution.
 		 */
-		public ResponseListener setAfterArrgs(Object...args) {
-			this.builder.setAfterArgs(args);
+		public ResponseListener<E> setSuccessExecutionArgs(Object...args) {
+			this.builder.setSuccessExecutionArgs(args);
 			return this;
 		}
 		/**
-		 * [ES] Permite agregar argumentos 'NoExecuted'.<br>
-		 * [EN] Allows to put 'NoExecuted' arguments.
+		 * [ES] Permite agregar argumentos al metodo de ejecución fallida de un comando de respuesta.<br>
+		 * [EN] Allows to put arguments to the failed execution method of a response command.
+		 * @param args <br>[ES] argumentos extras para la ejecución. [EN] extra arguments for execution.
 		 */
-		public ResponseListener setNoExecutedArrgs(Object...args) {
-			this.builder.setNoArgs(args);
+		public ResponseListener<E> setFailedExecutionArgs(Object...args) {
+			this.builder.setFailedExecutionArgs(args);
 			return this;
 		}
 		/**
-		 * [ES] Permite agregar argumentos 'Finally'.<br>
-		 * [EN] Allows to put 'Finally' arguments.
+		 * [ES] Permite agregar argumentos al metodo de fin del ciclo de un comando de respuesta.<br>
+		 * [EN] Allows to put arguments to the end of cycle method of a response command.
+		 * @param args <br>[ES] argumentos extras para la ejecución. [EN] extra arguments for execution.
 		 */
-		public ResponseListener setFinallyArrgs(Object...args) {
-			this.builder.setFinallyArgs(args);
+		public ResponseListener<E> setFinallyExecutionArgs(Object...args) {
+			this.builder.setFinallyExecutionArgs(args);
 			return this;
 		}
 		/**
-		 * [ES] Configura si el comando extra solo responde al autor.<br>
-		 * [EN] Sets if the extra command only listens to the author.
+		 * [ES] Configura si el comando de respuesta solo responde al autor.<br>
+		 * [EN] Sets if the response command only listens to the author.
+		 * @param authorOnly <br>[ES] true para que el comando solo responda al autor. 
+		 * [EN] true for command only responses to the author.
 		 */
-		public ResponseListener setAuthorOnly(boolean b) {
-			this.builder.setAuthorOnly(b);
+		public ResponseListener<E> setAuthorOnly(boolean authorOnly) {
+			this.builder.setAuthorOnly(authorOnly);
 			return this;
 		}
 		/**
-		 * [ES] Devuelve verdadero si el comando extra solo responde al autor.<br>
-		 * [EN] Returns true if the extra command only listens to the author.
+		 * [ES] Devuelve verdadero si el comando de respuesta solo responde al autor.<br>
+		 * [EN] Returns true if the response command only listens to the author.
+		 * @return [ES] verdadero si el comando solo responde al author.<br>
+		 * [EN] true if the command only responses to author.
 		 */
 		public boolean isAuthorOnly() {
 			return this.builder.isAuthorOnly();
@@ -341,7 +477,8 @@ public class ResponseCommandManager {
 				return false;
 			if (getClass() != obj.getClass())
 				return false;
-			ResponseListener other = (ResponseListener) obj;
+			@SuppressWarnings("unchecked")
+			ResponseListener<E> other = (ResponseListener<E>) obj;
 			if (!Arrays.deepEquals(builder.getArgs(), other.builder.getArgs()))
 				return false;
 			if (builder.getAuthorId() == null) {

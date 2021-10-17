@@ -24,8 +24,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 
-import com.jaxsandwich.sandwichcord.development.NotDocumented;
-
 @Retention(RUNTIME)
 @Repeatable(Options.class)
 @Target(METHOD)
@@ -33,7 +31,8 @@ import com.jaxsandwich.sandwichcord.development.NotDocumented;
  * [ES] Agrega una Opción al comando.<br>
  * [EN] Adds an Option to the command.
  * @author Juan Acuña
- * @version 1.4
+ * @version 1.5
+ * @since 0.0.1
  */
 public @interface Option {
 	/**
@@ -45,7 +44,7 @@ public @interface Option {
 	* [ES] Descripción de la opcion en el idioma por defecto.<br>
 	* [EN] Option description in the default language.
 	*/
-	String desc() default "";
+	String desc() default "?";
 	/**
 	 * [ES] Alias de la opción. Son otros Strings con los que se puede usar la opcion. No pueden repetirse ni ser iguales a otras opciones dentro del mismo comando.<br>
 	 * [EN] Aliases of the option. They are others Strings with you can use the option. They can't be the same as the name of others options inside the same command.
@@ -61,10 +60,19 @@ public @interface Option {
 	 * [EN] The option is visible for the help commands.
 	 */
 	boolean visible() default true;
-	@NotDocumented
+	/**
+	 * [ES] Indica que la opción no estandar.<br>
+	 * [EN] Indicates the option is no standar.
+	 */
 	boolean noStandar() default false;
-	@NotDocumented
+	/**
+	 * [ES] Indica si la opción es obligatoria.<br>
+	 * [EN] Indicates if the option is required.
+	 */
 	boolean required() default false;
-	@NotDocumented
+	/**
+	 * Indica el tipo de la opción.<br>
+	 * Indicates the type of the option.
+	 */
 	OptionType type() default OptionType.STRING;
 }

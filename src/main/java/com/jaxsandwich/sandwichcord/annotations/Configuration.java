@@ -31,7 +31,15 @@ import com.jaxsandwich.sandwichcord.core.util.Language;
  * [EN] Indicates that the class is for configuration of commands, categories, options and/or parameters by the especified language.
  * @author Juan Acuña
  * @version 1.1
+ * @since 0.3.0
+ * @deprecated <br>[ES] En su lugar, use {@link com.jaxsandwich.sandwichcord.core.LanguageConfiguration}.<br>
+ * [EN] Instead, use {@link com.jaxsandwich.sandwichcord.core.LanguageConfiguration}.
  */
+@Deprecated
 public @interface Configuration {
+	/**
+	 * [ES] {@link Language} en el que se aplicará la configuración.<br>
+	 * [EN] {@link Language} which will be applied to the configuration.
+	 */
 	Language value();
 }

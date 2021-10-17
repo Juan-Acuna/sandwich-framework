@@ -28,6 +28,7 @@ import java.lang.annotation.Target;
  * [ES] Indica que la clase contiene los comandos de respuesta.<br>
  * [EN] Indicates that the class contains response commands.
  * @author Juan Acuña
+ * @since 0.3.0
  * @version 2.0
  */
 public @interface ResponseCommandContainer {

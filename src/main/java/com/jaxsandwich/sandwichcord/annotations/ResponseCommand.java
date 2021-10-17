@@ -28,10 +28,15 @@ import java.lang.annotation.Target;
  * [ES] Indica que es un comando de respuesta.<br>
  * [EN] Indicates that it's a response command.
  * @author Juan Acuña
+ * @since 0.3.6
  * @version 2.0<br>
  * [ES] Requiere ser usado en una clase con la anotacion {@link ResponseCommandContainer}.<br>
  * [EN] Requires be used in a class with the annotation {@link ResponseCommandContainer}.
  */
 public @interface ResponseCommand {
+	/**
+	 * [ES] Indica el nombre del comando de respuesta.<br>
+	 * [EN] Indicates the name of the response command.
+	 */
 	String value();
 }

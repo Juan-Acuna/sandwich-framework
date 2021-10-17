@@ -28,11 +28,19 @@ import java.lang.annotation.Target;
  * [ES] Indica el identificador para el texto.<br>
  * [ES] Indicates the identifier for the text.
  * @author Juan Acuña
+ * @since 0.5.0
  * @version 1.1<br>
  * [ES] Solo puede ser usada en una clase con la anotación {@link ValuesContainer}.<br>
  * [EN] Only can be used in a class annotated with {@link ValuesContainer}.
+ * @deprecated <br>
+ * [ES] En su lugar, use {@link com.jaxsandwich.sandwichcord.core.LanguageConfiguration}.<br>
+ * [EN] Instead, use {@link com.jaxsandwich.sandwichcord.core.LanguageConfiguration}.
  */
 @Deprecated
 public @interface ValueID {
+	/**
+	 * [ES] Identificador del valor.<br>
+	 * [EN] Identifier of the value.
+	 */
 	String value();
 }

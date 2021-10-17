@@ -1,11 +1,12 @@
 [framework]:http://docs.jaxsandwich.com/sandwichcord/latest
-[actual]:http://docs.jaxsandwich.com/sandwichcord/v0.8.x/javadoc/
+[actual]:http://docs.jaxsandwich.com/sandwichcord/v0.9.x/javadoc/
 [web-jax]:http://jaxsandwich.com/
 [jda-github]:https://github.com/DV8FromTheWorld/JDA
 [jda]:https://ci.dv8tion.net/job/JDA/javadoc/
 [gradle]:https://docs.gradle.org/current/userguide/declaring_dependencies.html#sub:file_dependencies
 [maven]:https://maven.apache.org/guides/mini/guide-3rd-party-jars-local.html  
 
+[PACKET]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/models/packets/Packet.html  
 [BOT]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html
 [BOTRUNNER]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/BotRunner.html
 [COMMANDPACKET]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/models/CommandPacket.html
@@ -14,8 +15,6 @@
 [RUN-BOT]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/Bot.html#runBot()
 [LANG]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/util/Language.html
 [INIT-BOT]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/core/BotRunner.html#singleBotModeInit(com.jaxsandwich.sandwichcord.core.Bot)
-[A-CAT]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/annotations/Category.html  
-[A-CMD]:http://docs.jaxsandwich.com/sandwichcord/latest?legacy=true&q=/javadoc/com/jaxsandwich/sandwichcord/annotations/Command.html  
 
 [JDABUILDER]:https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/JDABuilder.html
 
@@ -32,7 +31,8 @@ Este framework contiene lo necesario para desarrollar un bot básico pero útil,
 ##### **Sandwich Framework ayuda con la gestion de categorias, comandos, opciones/parametros, idioma entre otros, mas se debe estudiar la [documentación de la librería JDA 4][jda] para un correcto desarrollo.*
 ###### **Actualmente solo cuenta con soporte para inglés y español*
 
-## Instalación | Versión actual: [0.8.1(BETA)][actual]
+## Instalación  
+###### Versión más reciente: [0.9.0(BETA)][actual]  
 ### Importando en Maven  
 Actualmente no cuenta con soporte a Maven, por lo que si lo utilizas, tendrás que realizar una importación local del archivo `sandwichcord-framework-VERSION.jar` siguiendo las [instucciones para importar archivos .jar en proyecto Maven][maven](en inglés).  
 
@@ -81,18 +81,9 @@ public class MyBot extends Bot{
       super(token, Language.ES);
       this.setSingleGuildMode(true);
   }
-  @Override
-  public void onMessageReceived(MessageReceivedEvent event) {
-    try {
-      runCommand(event);
-    } catch (Exception e1) {
-      e1.printStackTrace();
-    }
-  }
 }
 ```
-El constructor de la clase [Bot][BOT] requiere dos parametros: el Token de Discord y el idioma por defecto del bot, el cual corresponde al valor del enum [Language][LANG].   
-El metodo abstracto [Bot.onMessageReceived(MessageReceivedEvent)][MSG-RECEIVED] que se esta sobreescribiendo se ejecutará cada vez que se reciba un mensaje. En este metodo se debe manejar la lógica para ejecutar comandos. Una vez que, dentro del metodo se desea ejecutar el comando, se llama a la función [Bot.runCommand(MessageReceivedEvent)][RUN-CMD] pasando el evento como parámetro.  
+El constructor de la clase [Bot][BOT] requiere dos parametros: el Token de Discord y el idioma por defecto del bot, el cual corresponde al valor del enum [Language][LANG].  
 El comportamiento del bot puede ser personalizado en su constructor, he aquí un ejemplo:
 ```java
 public MyBot(String token) {
@@ -108,7 +99,7 @@ public MyBot(String token) {
 ```
 Para saber más que hacen estas y otras configuraciones, revise la documentación de la clase [Bot][BOT].  
   
-Con lo anterior, ¡ya tienes un bot de Discord!... Un bot que aún no hace nada, ya que aún no conoce ningún comando.
+Con lo anterior, ¡ya tienes un bot de Discord!... Un bot que aún no hace nada, ya que no conoce ningún comando.
   
 ### 2.- Crear los comandos
 Los comandos definen las capacidades del bot, son todo lo que este puede hacer y son la parte mas interesante de programar(y la que más tiempo lleva). Los comandos también son objetos, pero a diferencia del bot, no necesitas crear una clase por cada uno.  
@@ -117,11 +108,11 @@ Lo primero es importar dos anotaciones y la clase [CommandPacket][COMMANDPACKET]
 ```java
 import com.jaxsandwich.sandwichcord.annotations.Category;
 import com.jaxsandwich.sandwichcord.annotations.Command;
-import com.jaxsandwich.sandwichcord.models.CommandPacket;
+import com.jaxsandwich.sandwichcord.models.packets.CommandPacket;
 ```
-Comenzamos por crear la clase MyCategory, que será nuestra categoría. Para ello debemos indicarselo al framework anotando la clase con la anotación [Category][A-CAT]. Luego en ella crearemos un metodo que será nuestro comando, también indicandolo mediante la anotación [Command][A-CMD].
-La clase [CommandPacket][COMMANDPACKET] es la encargada de comunicar el mensaje que recibe el bot ya procesado con el comando.  
-A continuación, un ejemplo de comando, recordando que estos deben pertenecer a una categoría obligatoriamente (requisito del framework, no de Discord). Todos los comandos deben ser metodos estáticos y recibir como único parámetro un objeto tipo [CommandPacket][COMMANDPACKET], de lo contrario serán ignorados.
+Comenzamos por crear la clase MyCategory, que será nuestra categoría. Para ello debemos indicarselo al framework anotando la clase con la anotación [Category][A-CAT]. Luego en ella crearemos un metodo que será nuestro comando, también indicándolo mediante la anotación [Command][A-CMD].
+La clase [CommandPacket][COMMANDPACKET] es la encargada de comunicar el mensaje que recibe el bot ya procesado con el comando. Puedes usar también alguna de las clases superiores en gerarquía, pero por ahora bastará con esta.  
+A continuación, un ejemplo de comando, recordando que estos deben pertenecer a una categoría obligatoriamente (requisito del framework, no de Discord). Todos los comandos deben ser metodos estáticos y recibir como único parámetro un objeto tipo [Packet][PACKET] o subclases de este, de lo contrario serán ignorados.
 ```java
 @Category
 public class MyCategory{
@@ -147,16 +138,16 @@ public class ClasePrincipal {
 	public static void main(String[] args) throws Exception{
 		String discord_token = "Enter your Discord Token here!";
 		MyBot bot = new MyBot(discord_token);
-		BotRunner.singleBotModeInit(bot);
+		BotRunner.init(bot);
 		bot.runBot();
 	}
 }
 ```
-Primero se inicializa el bot con el metodo estático [BotRunner.singleBotModeInit(Bot)][INIT-BOT], para que el framework analice el bot y configure todo lo necesario para funcionar. Luego se puede iniciar la ejecución del bot con el metodo [bot.runBot()][RUN-BOT]. Esto último permite hacer configuraciones al objeto [JDABuilder][JDABUILDER] contenido en el bot, ya que una vez este comienza su ejecución, estas no pueden ser aplicadas.  
+Primero se inicializa el bot con el metodo estático [BotRunner.init(Bot)][INIT-BOT], para que el framework analice el bot y configure todo lo necesario para funcionar. Luego se puede iniciar la ejecución del bot con el metodo [bot.runBot()][RUN-BOT]. Esto último permite hacer configuraciones al objeto [JDABuilder][JDABUILDER] contenido en el bot, ya que una vez este comienza su ejecución, estas no pueden ser aplicadas.  
   
 ### 4.- ¡Probar y seguir mejorando!
 El bot ya está listo y corriendo, solo queda invitarlo a tu servidor de Discord y seguir agregándole características.
 
 
 ## Ejemplo de bot desarrollado con Sandwichcord Framework
-Un ejemplo de bot desarrollado con este framework es el bot multiuso llamado [Jax Sandwich](https://github.com/Juan-Acuna/jax-sndwch-bot)
+Un ejemplo de bot desarrollado con este framework es el bot multiuso llamado [Jax Sandwich](https://github.com/Juan-Acuna/jax-sndwch-bot)(no disponible en estos momentos).

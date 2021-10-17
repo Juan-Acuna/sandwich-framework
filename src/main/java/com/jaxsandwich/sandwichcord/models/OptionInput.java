@@ -19,11 +19,22 @@ package com.jaxsandwich.sandwichcord.models;
 import com.jaxsandwich.sandwichcord.development.HalfDocumented;
 import com.jaxsandwich.sandwichcord.development.NotDocumented;
 
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.IMentionable;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+
 /**
  * [ES] Representa los parametros/opciones ingresados por el usuario.<br>
  * [EN] Represents the parameters/options entered by the user.
  * @author Juancho
- * @version 2.0
+ * @version 2.1
+ * @since 0.0.1
  */
 public class OptionInput {
 	/**
@@ -49,7 +60,19 @@ public class OptionInput {
 	 * [EN]
 	 */
 	@NotDocumented
+	private OptionType valueType;
+	/**
+	 * [ES] <br>
+	 * [EN]
+	 */
+	@NotDocumented
 	private OptionInputType type;
+	/**
+	 * [ES] <br>
+	 * [EN]
+	 */
+	@NotDocumented
+	private OptionMapping map = null;
 	/**
 	 * [ES] <br>
 	 * [EN]
@@ -63,8 +86,20 @@ public class OptionInput {
 	 * [EN]
 	 */
 	@NotDocumented
+	public OptionInput(OptionMapping map) {
+		this.key = map.getName().toLowerCase();
+		this.value = map.getAsString();
+		this.type=OptionInputType.STANDAR;
+		this.valueType = map.getType();
+		this.map=map;
+	}
+	/**
+	 * [ES] <br>
+	 * [EN]
+	 */
+	@NotDocumented
 	public OptionInput(String clave) {
-		this.key=clave;
+		this.key=clave.toLowerCase();
 		type=OptionInputType.NO_STANDAR;
 	}
 	/**
@@ -73,7 +108,7 @@ public class OptionInput {
 	 */
 	@NotDocumented
 	public OptionInput(String clave, String valor) {
-		this.key=clave;
+		this.key=clave.toLowerCase();
 		this.value=valor;
 	}
 	/**
@@ -82,7 +117,7 @@ public class OptionInput {
 	 */
 	@NotDocumented
 	public OptionInput(String clave, OptionInputType tipo) {
-		this.key=clave;
+		this.key=clave.toLowerCase();
 		this.type=tipo;
 	}
 	/**
@@ -91,7 +126,7 @@ public class OptionInput {
 	 */
 	@NotDocumented
 	public OptionInput(String clave, String valor, OptionInputType tipo) {
-		this.key=clave;
+		this.key=clave.toLowerCase();
 		this.value=valor;
 		this.type=tipo;
 	}
@@ -101,7 +136,7 @@ public class OptionInput {
 	 */
 	@NotDocumented
 	public void setKey(String clave) {
-		this.key=clave;
+		this.key=clave.toLowerCase();
 	}
 	/**
 	 * [ES] <br>
@@ -218,6 +253,63 @@ public class OptionInput {
 		return false;
 	}
 	/**
+	 * [ES] <br>
+	 * [EN]
+	 */
+	@NotDocumented
+	public GuildChannel getValueAsGuildChannel() {
+		return this.map.getAsGuildChannel();
+	}
+	/**
+	 * [ES] <br>
+	 * [EN]
+	 */
+	@NotDocumented
+	public Member getValueAsMember() {
+		return this.map.getAsMember();
+	}
+	/**
+	 * [ES] <br>
+	 * [EN]
+	 */
+	@NotDocumented
+	public IMentionable getValueAsMentionable() {
+		return this.map.getAsMentionable();
+	}
+	/**
+	 * [ES] <br>
+	 * [EN]
+	 */
+	@NotDocumented
+	public MessageChannel getValueAsMessageChannel() {
+		return this.map.getAsMessageChannel();
+	}
+	/**
+	 * [ES] <br>
+	 * [EN]
+	 */
+	@NotDocumented
+	public Role getValueAsRole() {
+		return this.map.getAsRole();
+	}
+	/**
+	 * [ES] <br>
+	 * [EN]
+	 */
+	@NotDocumented
+	public User getValueAsUser() {
+		return this.map.getAsUser();
+	}
+	/**
+	 * [ES] <br>
+	 * [EN]
+	 */
+	@NotDocumented
+	public ChannelType getValueAsChannelType() {
+		return this.map.getChannelType();
+	}
+	
+	/**
 	 * [ES] Tipo de {@link OptionInput}.<br>
 	 * [EN] Type of {@link OptionInput}.
 	 */
@@ -225,8 +317,10 @@ public class OptionInput {
 		/**
 		 * [ES] Parametro/opción preestablecida por el comando que sigue el formato [caracter][opción].<br>
 		 * Ejemplo: para opción 'p' con caracter de opción '-' el formato sería: -p.<br>
+		 * Para comandos slash todas las opciones pertenecen a este tipo.<br>
 		 * [EN] NoStandarOption/option preset by command wich follows the format [character][option].<br>
-		 * Example: for option 'p' and option character '-' the format is: -p.
+		 * Example: for option 'p' and option character '-' the format is: -p.<br>
+		 * For slash commands all options belong to this type.
 		 */
 		STANDAR,
 		/**

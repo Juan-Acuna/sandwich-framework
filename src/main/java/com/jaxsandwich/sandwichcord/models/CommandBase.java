@@ -22,11 +22,13 @@ import java.util.HashMap;
 
 import com.jaxsandwich.sandwichcord.core.util.Language;
 import com.jaxsandwich.sandwichcord.core.util.LanguageHandler;
+import com.jaxsandwich.sandwichcord.development.NotDocumented;
 /**
  * [ES] Clase plantilla para comandos.<br>
  * [EN] Template class for commands.
  * @author Juan Acuña
  * @version 1.1
+ * @since 0.6.0
  */
 public abstract class CommandBase {
 	/**
@@ -34,6 +36,12 @@ public abstract class CommandBase {
 	 * [EN] Command Identifier.
 	 */
 	protected String id = null;
+	/**
+	 * 
+	 * 
+	 */
+	@NotDocumented
+	protected String path = null;
 	/**
 	 * [ES] Contenedor de nombres.<br>
 	 * [EN] Container of names.
@@ -84,7 +92,7 @@ public abstract class CommandBase {
 	 * [EN] Constructor of CommandBase.
 	 */
 	public CommandBase(String id) {
-		this.id=id;
+		this.id=id.toLowerCase();
 		name = new HashMap<Language, String>();
 		alias = new HashMap<Language, String[]>();
 		options = new ArrayList<OptionObject>();
@@ -94,7 +102,11 @@ public abstract class CommandBase {
 	 * [EN] Returns the command identifier.
 	 */
 	public String getId() {
-		return id;
+		return id.toLowerCase();
+	}
+	@NotDocumented
+	public String getCommandPath() {
+		return this.path;
 	}
 	/***/
 	/**

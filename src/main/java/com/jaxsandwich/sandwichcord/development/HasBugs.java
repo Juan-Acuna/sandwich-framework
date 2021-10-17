@@ -34,6 +34,7 @@ import java.lang.annotation.Target;
  * [EN] Development exclusive use annotation. Indicates this component has bugs.
  * @author Juan Acuña
  * @version 1.0
+ * @since 0.7.0
  */
 public @interface HasBugs {
 

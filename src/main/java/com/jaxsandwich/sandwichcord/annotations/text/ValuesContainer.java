@@ -31,8 +31,16 @@ import com.jaxsandwich.sandwichcord.core.util.Language;
  * [EN] Indicates that the class contains text for a determined language.(ex Values)
  * @author Juan Acuña
  * @version 1.2
+ * @since 0.5.0
+ * @deprecated <br>
+ * [ES] En su lugar, use {@link com.jaxsandwich.sandwichcord.core.LanguageConfiguration}.<br>
+ * [EN] Instead, use {@link com.jaxsandwich.sandwichcord.core.LanguageConfiguration}.
  */
 @Deprecated
 public @interface ValuesContainer {
+	/**
+	 * [ES] Idioma a configurar.<br>
+	 * [EN] Language to configure.
+	 */
 	Language value();
 }

@@ -19,23 +19,31 @@ package com.jaxsandwich.sandwichcord.core;
 import java.util.List;
 
 import com.jaxsandwich.sandwichcord.core.util.Language;
+import com.jaxsandwich.sandwichcord.development.HasBugs;
 import com.jaxsandwich.sandwichcord.models.*;
 import com.jaxsandwich.sandwichcord.models.OptionInput.OptionInputType;
-import com.jaxsandwich.sandwichcord.models.discord.GuildConfig;
+import com.jaxsandwich.sandwichcord.models.actionable.ActionableType;
+import com.jaxsandwich.sandwichcord.models.actionable.IActionable;
+import com.jaxsandwich.sandwichcord.models.guild.GuildConfig;
+import com.jaxsandwich.sandwichcord.models.packets.ReplyablePacket;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 /**
  * [ES] Representa el comando de ayuda automático del bot.<br>
  * [EN] Represents the bot automatic help command.
  * @author Juan Acuña
- * @version 1.2
+ * @version 2.0
+ * @since 0.0.1
  */
-public class AutoHelpCommand extends CommandBase{
+@HasBugs
+public class AutoHelpCommand extends CommandBase implements IActionable<ReplyablePacket<?>>{
 	/**
 	 * [ES] Bot al cual este AutoHelpCommand esta asociado.<br>
-	 * [EN] Bot wich this AutoHelpCommand is associated.
+	 * [EN] Bot which this AutoHelpCommand is associated.
 	 */
 	protected Bot bot;
 	/**
@@ -62,119 +70,7 @@ public class AutoHelpCommand extends CommandBase{
 		this.setAlias(Language.EN, a_en);
 		this.setAlias(Language.ES, a_es);
 		this.bot=bot;
-	}
-	/**
-	 * [ES] Metodo que ejecuta el comando de ayuda.<br>
-	 * [EN] Method that executes the help command.
-	 */
-	public void help(CommandPacket packet) {
-		MessageReceivedEvent e = packet.getMessageReceivedEvent();
-		Language actualLang = Language.ES;
-		GuildConfig actualGuild = null;
-		String searchQuery = null;
-		EmbedBuilder eb = null;
-		boolean cmdPass = false;
-		boolean catPass = false;
-		if(packet.isFromGuild()) {
-			actualGuild = packet.getGuildsManager().getConfig(e.getGuild().getIdLong());
-			if(actualGuild!=null)
-				actualLang = actualGuild.getLanguage();
-		}
-		for(OptionInput ip : packet.getParameters()) {
-			if(ip.getType()==OptionInputType.NO_STANDAR) {
-				searchQuery = ip.getValueAsString();
-			}
-		}
-		if(searchQuery!=null) {
-			CommandObject sCmd = null;
-			CategoryObject sCat = null;
-			boolean iscmd = searchQuery.startsWith("$");
-			for(CommandObject mc : CommandObject.getAsList()) {
-				if(mc.getName(actualLang).equalsIgnoreCase(searchQuery) || searchQuery.equalsIgnoreCase("$"+mc.getName(actualLang))) {
-					sCmd=mc;
-					if(actualGuild!=null) {
-						cmdPass = !actualGuild.isCommandAllowed(mc.getId())
-								|| !actualGuild.isCategoryAllowed(mc.getCategory().getId())
-								|| !actualGuild.isMemberAllowed(e.getMember().getId())
-								|| !actualGuild.isChannelAllowed(e.getChannel().getId());
-						List<Role> lr = e.getMember().getRoles();
-						if(lr.size()>0) {
-							cmdPass = cmdPass || !actualGuild.isRoleAllowed(e.getMember().getRoles().get(0).getId());
-						}
-					}
-					break;
-				}
-				for(String al : mc.getAlias(actualLang)) {
-					if(al.equalsIgnoreCase(searchQuery) || searchQuery.equalsIgnoreCase("$"+al)) {
-						sCmd=mc;
-						if(actualGuild!=null) {
-							cmdPass = !actualGuild.isCommandAllowed(mc.getId())
-									|| !actualGuild.isCategoryAllowed(mc.getCategory().getId())
-									|| !actualGuild.isMemberAllowed(e.getMember().getId())
-									|| !actualGuild.isChannelAllowed(e.getChannel().getId());
-							List<Role> lr = e.getMember().getRoles();
-							if(lr.size()>0) {
-								cmdPass = cmdPass || !actualGuild.isRoleAllowed(e.getMember().getRoles().get(0).getId());
-							}
-						}
-						break;
-					}
-				}
-			}
-			if(iscmd) {
-				eb = setForCommand(eb,sCmd,actualLang,!cmdPass);
-			}else {
-				for(CategoryObject mc : CategoryObject.getAsList()) {
-					if(mc.getName(actualLang).equalsIgnoreCase(searchQuery)) {
-						sCat=mc;
-						if(actualGuild!=null) {
-							catPass = !actualGuild.isCategoryAllowed(mc.getId())
-									|| !actualGuild.isMemberAllowed(e.getMember().getId())
-									|| !actualGuild.isChannelAllowed(e.getChannel().getId());
-							List<Role> lr = e.getMember().getRoles();
-							if(lr.size()>0) {
-								catPass = catPass || !actualGuild.isRoleAllowed(e.getMember().getRoles().get(0).getId());
-							}
-						}
-						break;
-					}
-				}
-				if(sCat!=null && sCmd!=null) {
-					eb = setForCategory(eb,sCat,actualLang,true,!catPass,actualGuild);
-				}else if(sCat!=null & sCmd==null) {
-					eb = setForCategory(eb,sCat,actualLang,false,!catPass,actualGuild);
-				}else {
-					eb = setForCommand(eb,sCmd,actualLang,!cmdPass);
-				}
-			}
-		}else {
-			eb = new EmbedBuilder();
-			eb.setTitle(Values.value("xyz-sndwch-def-hlp-title", actualLang));
-			eb.setDescription(Values.value("xyz-sndwch-def-hlp-desc", actualLang));
-			eb.addField("", Values.value("xyz-sndwch-def-hlp-cats", actualLang), false);
-			for(CategoryObject category : CategoryObject.getAsList()) {
-				if(this.hide_nsfw_category && category.isNsfw() && !packet.getTextChannel().isNSFW()) {
-					continue;
-				}
-				if(!category.isVisible()) {
-					continue;
-				}
-				eb.addField(category.getName(actualLang),category.getDesc(actualLang), false);
-				String cmds="";
-				for(CommandObject command : category.getCommands()) {
-					if(!command.isVisible() || command.isNsfw()) {
-						continue;
-					}
-					cmds += "`"+command.getName(actualLang)+(command.isEnabled()?"` ":"("+Values.value("xyz-sndwch-def-t-na", actualLang)+")` ");
-				}
-				eb.addField(Values.formatedValue("xyz-sndwch-def-hlp-catcmd", actualLang, cmds),Values.formatedValue("xyz-sndwch-def-hlp-cathint", actualLang,packet.getBot().getPrefix(),category.getName(actualLang)),false);
-			}
-		}
-		if(eb==null) {
-			eb=new EmbedBuilder();
-			eb.setTitle(Values.value("xyz-sndwch-def-hlp-cat-nf", actualLang));
-		}
-		e.getChannel().sendMessageEmbeds(eb.build()).queue();
+		this.path="?";
 	}
 	/**
 	 * [ES] Metodo auxiliar para imprimir la ayuda de un comando.<br>
@@ -257,5 +153,127 @@ public class AutoHelpCommand extends CommandBase{
 	 */
 	public void setHideNSFWCategory(boolean hide) {
 		this.hide_nsfw_category = hide;
+	}
+	@Override
+	/**
+	 * [ES] Metodo que ejecuta el comando de ayuda.<br>
+	 * [EN] Method that executes the help command.
+	 */
+	public void execute(ReplyablePacket<?> packet) throws Exception {
+		Language actualLang = packet.getPreferredLang();
+		GuildConfig actualGuild = packet.getGuildConfig();
+		Member mem = null;
+		if(packet.isFromGuild()) {
+			if(packet.getEvent() instanceof MessageReceivedEvent) {
+				mem = ((MessageReceivedEvent)packet.getEvent()).getMember();
+			}else {
+				mem = ((SlashCommandEvent)packet.getEvent()).getMember();
+			}
+		}
+		String searchQuery = null;
+		EmbedBuilder eb = null;
+		boolean cmdPass = false;
+		boolean catPass = false;
+		for(OptionInput ip : packet.getOptions()) {
+			if(ip.getType()==OptionInputType.NO_STANDAR) {
+				searchQuery = ip.getValueAsString();
+			}
+		}
+		if(searchQuery!=null) {
+			CommandObject sCmd = null;
+			CategoryObject sCat = null;
+			boolean iscmd = searchQuery.startsWith("$");
+			for(CommandObject mc : CommandObject.getAsList()) {
+				if(mc.getName(actualLang).equalsIgnoreCase(searchQuery) || searchQuery.equalsIgnoreCase("$"+mc.getName(actualLang))) {
+					sCmd=mc;
+					if(actualGuild!=null) {
+						cmdPass = !actualGuild.isCommandAllowed(mc.getId())
+								|| !actualGuild.isCategoryAllowed(mc.getCategory().getId())
+								|| !actualGuild.isMemberAllowed(packet.getAuthorId())
+								|| !actualGuild.isChannelAllowed(packet.getChannel().getId());
+						List<Role> lr;
+						lr = mem.getRoles();
+						if(lr.size()>0) {
+							cmdPass = cmdPass || !actualGuild.isRoleAllowed(mem.getRoles().get(0).getId());
+						}
+					}
+					break;
+				}
+				for(String al : mc.getAlias(actualLang)) {
+					if(al.equalsIgnoreCase(searchQuery) || searchQuery.equalsIgnoreCase("$"+al)) {
+						sCmd=mc;
+						if(actualGuild!=null) {
+							cmdPass = !actualGuild.isCommandAllowed(mc.getId())
+									|| !actualGuild.isCategoryAllowed(mc.getCategory().getId())
+									|| !actualGuild.isMemberAllowed(mem.getId())
+									|| !actualGuild.isChannelAllowed(packet.getChannel().getId());
+							List<Role> lr;
+							lr = mem.getRoles();
+							if(lr.size()>0) {
+								cmdPass = cmdPass || !actualGuild.isRoleAllowed(mem.getRoles().get(0).getId());
+							}
+						}
+						break;
+					}
+				}
+			}
+			if(iscmd) {
+				eb = setForCommand(eb,sCmd,actualLang,!cmdPass);
+			}else {
+				for(CategoryObject mc : CategoryObject.getAsList()) {
+					if(mc.getName(actualLang).equalsIgnoreCase(searchQuery)) {
+						sCat=mc;
+						if(actualGuild!=null) {
+							catPass = !actualGuild.isCategoryAllowed(mc.getId())
+									|| !actualGuild.isMemberAllowed(mem.getId())
+									|| !actualGuild.isChannelAllowed(packet.getChannel().getId());
+							List<Role> lr = mem.getRoles();
+							if(lr.size()>0) {
+								catPass = catPass || !actualGuild.isRoleAllowed(mem.getRoles().get(0).getId());
+							}
+						}
+						break;
+					}
+				}
+				if(sCat!=null && sCmd!=null) {
+					eb = setForCategory(eb,sCat,actualLang,true,!catPass,actualGuild);
+				}else if(sCat!=null & sCmd==null) {
+					eb = setForCategory(eb,sCat,actualLang,false,!catPass,actualGuild);
+				}else {
+					eb = setForCommand(eb,sCmd,actualLang,!cmdPass);
+				}
+			}
+		}else {
+			eb = new EmbedBuilder();
+			eb.setTitle(Values.value("xyz-sndwch-def-hlp-title", actualLang));
+			eb.setDescription(Values.value("xyz-sndwch-def-hlp-desc", actualLang));
+			eb.addField("", Values.value("xyz-sndwch-def-hlp-cats", actualLang), false);
+			for(CategoryObject category : CategoryObject.getAsList()) {
+				if(this.hide_nsfw_category && category.isNsfw() && !packet.getTextChannel().isNSFW()) {
+					continue;
+				}
+				if(!category.isVisible()) {
+					continue;
+				}
+				eb.addField(category.getName(actualLang),category.getDesc(actualLang), false);
+				String cmds="";
+				for(CommandObject command : category.getCommands()) {
+					if(!command.isVisible() || command.isNsfw()) {
+						continue;
+					}
+					cmds += "`"+command.getName(actualLang)+(command.isEnabled()?"` ":"("+Values.value("xyz-sndwch-def-t-na", actualLang)+")` ");
+				}
+				eb.addField(Values.formatedValue("xyz-sndwch-def-hlp-catcmd", actualLang, cmds),Values.formatedValue("xyz-sndwch-def-hlp-cathint", actualLang,packet.getBot().getPrefix(),category.getName(actualLang)),false);
+			}
+		}
+		if(eb==null) {
+			eb=new EmbedBuilder();
+			eb.setTitle(Values.value("xyz-sndwch-def-hlp-cat-nf", actualLang));
+		}
+		packet.sendMessage(eb.build()).queue();
+	}
+	@Override
+	public ActionableType getActionableType() {
+		return null;
 	}
 }

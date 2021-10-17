@@ -28,10 +28,15 @@ import java.lang.annotation.Target;
  * [ES] Identifica el metodo que se ejecutará cada medio segundo mientras se espera respuesta.<br>
  * [EN] Identifies the method wich will run every half second while the response command wait for a response.
  * @author Juan Acuña
+ * @since 0.5.0
  * @version 2.0<br>
  * [ES] Requiere ser usado en una clase con la anotacion {@link ResponseCommandContainer}.<br>
  * [EN] Requires be used in a class with the annotation {@link ResponseCommandContainer}.
  */
 public @interface ResponseWaitingExecution {
+	/**
+	 * [ES] Nombre del comando de respuesta al que referencia este {@link ResponseWaitingExecution}.<br>
+	 * [EN] Name of the response command referenced by this {@link ResponseWaitingExecution}.
+	 */
 	String name();
 }

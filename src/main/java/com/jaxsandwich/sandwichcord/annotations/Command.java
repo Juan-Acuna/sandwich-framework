@@ -22,14 +22,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.jaxsandwich.sandwichcord.development.InDevelopment;
+import com.jaxsandwich.sandwichcord.models.CommandMode;
+
 @Target(METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 /**
- * [ES] Indica que el etodo es un Comando.<br>
+ * [ES] Indica que el metodo es un Comando.<br>
  * [EN] Indicates that the method is a Command.
  * @author Juan Acuña
- * @version 1.2
- * @since 0.1.0
+ * @version 1.3
+ * @since 0.0.1
  */
 public @interface Command {
 	/**
@@ -39,7 +42,7 @@ public @interface Command {
 	String id();
 	/**
 	 * [ES] Descripción del comando en el idioma por defecto indicado.<br>
-	 * [EN] Description of the command in the default language indicated.
+	 * [EN] Description of the command in the indicated default language.
 	 */
 	String desc() default "";
 	/**
@@ -52,6 +55,7 @@ public @interface Command {
 	 * [EN] It's a NSFW command.
 	 */
 	boolean isNSFW() default false;
+	@InDevelopment
 	/**
 	 * [ES] Es un comando de ayuda.<br>
 	 * [EN] It's a help command.
@@ -67,4 +71,9 @@ public @interface Command {
 	 * [EN] The command is visible for the help commands.
 	 */
 	boolean visible() default true;
+	/**
+	 * [ES] Indica el modo de ejecución del comando.<br>
+	 * [EN] Indicates the execution mode of command.
+	 */
+	CommandMode commandMode() default CommandMode.UNSET;
 }

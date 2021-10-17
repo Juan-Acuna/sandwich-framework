@@ -22,8 +22,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.jaxsandwich.sandwichcord.core.util.Language;
 import com.jaxsandwich.sandwichcord.development.NotDocumented;
+import com.jaxsandwich.sandwichcord.models.actionable.ActionableType;
+import com.jaxsandwich.sandwichcord.models.actionable.IActionable;
+import com.jaxsandwich.sandwichcord.models.packets.ComponentPacket;
 
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 
@@ -34,7 +36,7 @@ import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
  * @version 1.0
  * @since 0.8.0
  * */
-public class ButtonActionObject implements Comparable<ButtonActionObject>{
+public class ButtonActionObject implements Comparable<ButtonActionObject>, IActionable<ComponentPacket<?>>{
 	@NotDocumented
 	private static Map<String, ButtonActionObject> cont = Collections.synchronizedMap(new HashMap<String, ButtonActionObject>());
 	@NotDocumented
@@ -64,6 +66,15 @@ public class ButtonActionObject implements Comparable<ButtonActionObject>{
 	public static final int getCommandCount() {
 		return cont.size();
 	}
+	public Method getAction() {
+		return action;
+	}
+	public void setAction(Method action) {
+		this.action = action;
+	}
+	public String getId() {
+		return id;
+	}
 	@Override
 	public int compareTo(ButtonActionObject b) {
 		return this.id.compareTo(b.id);
@@ -75,5 +86,13 @@ public class ButtonActionObject implements Comparable<ButtonActionObject>{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	@Override
+	public void execute(ComponentPacket<?> packet) throws Exception {
+		this.action.invoke(null, packet);
+	}
+	@Override
+	public ActionableType getActionableType() {
+		return ActionableType.BUTTON;
 	}
 }

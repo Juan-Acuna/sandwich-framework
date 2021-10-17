@@ -23,14 +23,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.jaxsandwich.sandwichcord.models.CommandMode;
+
 @Target({ FIELD, TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 /**
  * [ES] Indica que la clase es una Categoría, la cual será convertida en un objeto {@link com.jaxsandwich.sandwichcord.models.CategoryObject} por el framework.<br>
  * [EN] Indicates that the class is a Category, which will be turned into a {@link com.jaxsandwich.sandwichcord.models.CategoryObject} object by the framework.
  * @author Juan Acuña
- * @version 1.2
- * @since 0.1.0
+ * @version 1.3
+ * @since 0.0.1
  */
 public @interface Category {
 	/**
@@ -59,8 +61,18 @@ public @interface Category {
 	 */
 	boolean enabled() default true;
 	/**
-	 * [ES] Indica si esta es una categoría especial.<br>
-	 * [EN] Indicates if this is a special category.
+	 * [ES] Indica si esta es una categoría especial. Los comandos en esta categoría se ejecutan aunque el bot se encuentre apagado.<br>
+	 * [EN] Indicates if this is a special category. Commands in this category can be executed even if the bot is off.
 	 */
 	boolean isSpecial() default false;
+	/**
+	 * [ES] Indica el modo de ejecución de la categoría y los comandos en esta.<br>
+	 * [EN] Indicates the execution mode of the category and the commands inside it.
+	 */
+	CommandMode commandMode() default CommandMode.CLASIC_COMMAND_ONLY;
+	/**
+	 * [ES] Indica los servidores en los que esta categoría se registrará como comando slash(solo disponible en los modos {@link CommandMode#SLASH_COMMAND_ONLY} y {@link CommandMode#CLASIC_AND_SLASH_COMMAND}).<br>
+	 * [EN] Indicates the guilds where the category will be registered as slash command(only available in {@link CommandMode#SLASH_COMMAND_ONLY} and {@link CommandMode#CLASIC_AND_SLASH_COMMAND} modes).
+	 */
+	String[] guilds() default {};
 }

@@ -29,8 +29,16 @@ import java.lang.annotation.Target;
  * [EN] Identifies the Category to configure.
  * @author Juan Acuña
  * @version 1.1
+ * @since 0.3.0
+ * @deprecated <br>
+ * [ES] En su lugar, use {@link com.jaxsandwich.sandwichcord.core.LanguageConfiguration}.<br>
+ * [EN] Instead, use {@link com.jaxsandwich.sandwichcord.core.LanguageConfiguration}.
  */
 @Deprecated
 public @interface CategoryID {
+	/**
+	 * [ES] Identificador de la categoría.<br>
+	 * [EN] Identifier of category.
+	 */
 	String value();
 }

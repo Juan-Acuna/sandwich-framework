@@ -24,6 +24,7 @@ import com.jaxsandwich.sandwichcord.core.util.Language;
  * [EN] Defaul values inside the framework. In this case: English.
  * @author Juancho
  * @version 1.0
+ * @since 0.4.2
  */
 public class Strings_en {
 	@ValueID("xyz-sndwch-def-hlp-title")

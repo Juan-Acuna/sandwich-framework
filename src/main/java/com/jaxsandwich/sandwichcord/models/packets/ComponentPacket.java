@@ -14,42 +14,23 @@
  * limitations under the License.                                              *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-package com.jaxsandwich.sandwichcord.core;
+package com.jaxsandwich.sandwichcord.models.packets;
 
-import java.lang.reflect.Method;
+import com.jaxsandwich.sandwichcord.core.Bot;
+import com.jaxsandwich.sandwichcord.models.guild.GuildConfig;
 
-import com.jaxsandwich.sandwichcord.models.CommandPacket;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.GenericEvent;
 /**
- * [ES] Clase que ejecuta los comandos.<br>
- * [EN] Class that runs the commands.
- * @author Juancho
- * @version 1.3
+ * [ES] <br>
+ * [EN] 
+ * @author Juan Acuña
+ * @version 1.0
+ * @since 0.9.0
  */
-class CommandRunner implements Runnable{
-	/**
-	 * [ES] Metodo a ser ejecutado({@link com.jaxsandwich.sandwichcord.models.CommandObject#getAction()}).<br>
-	 * [EN] Method wich will be executed({@link com.jaxsandwich.sandwichcord.models.CommandObject#getAction()}).
-	 */
-	private Method method;
-	/**
-	 * [ES] Paquete que se enviará al comando.<br>
-	 * [EN] Packet wich will be send to the command.
-	 */
-	private CommandPacket packet;
-	/**
-	 * [ES] Constructor de CommandRunner.<br>
-	 * [EN] Constructor of CommandRunner.
-	 */
-	protected CommandRunner(Method method, CommandPacket packet) {
-		this.method=method;
-		this.packet=packet;
-	}
-	@Override
-	public void run() {
-		try {
-			method.invoke(null, packet);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+public abstract class ComponentPacket<T extends GenericEvent> extends Packet<T> {
+
+	public ComponentPacket(Bot bot, GuildConfig config, T event, MessageChannel channel, String authorId) {
+		super(bot, config, event, channel, authorId);
 	}
 }

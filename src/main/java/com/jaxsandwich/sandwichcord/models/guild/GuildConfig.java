@@ -14,7 +14,7 @@
  * limitations under the License.                                              *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-package com.jaxsandwich.sandwichcord.models.discord;
+package com.jaxsandwich.sandwichcord.models.guild;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,6 +36,7 @@ import net.dv8tion.jda.api.entities.User;
  * [EN] Represents a Discord's guildConfig configuration.
  * @author Juancho
  * @version 1.2
+ * @since 0.3.0
  */
 public class GuildConfig {
 	protected long id;

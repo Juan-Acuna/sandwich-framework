@@ -21,13 +21,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.jaxsandwich.sandwichcord.models.actionable.ActionableType;
+import com.jaxsandwich.sandwichcord.models.actionable.IActionable;
+import com.jaxsandwich.sandwichcord.models.packets.CommandPacket;
+import com.jaxsandwich.sandwichcord.models.packets.ReplyablePacket;
+import com.jaxsandwich.sandwichcord.models.packets.ResponseCommandPacket;
+import com.jaxsandwich.sandwichcord.models.packets.SlashCommandPacket;
 /**
  * Representa un comando de respuesta (comandos que se activan por otros comandos a la espera de una respuesta).
  * Represents an response command (commands which are activated by others commands and wait for an answer).
  * @author Juancho
- * @version 2.0
+ * @version 2.1
+ * @since 0.3.0
  */
-public class ResponseCommandObject extends CommandBase implements Comparable<ResponseCommandObject> {
+public class ResponseCommandObject extends CommandBase implements Comparable<ResponseCommandObject>, IActionable<ReplyablePacket<?>> {
 	private static Map<String, ResponseCommandObject> cont = Collections.synchronizedMap(new HashMap<String, ResponseCommandObject>());
 	Method _each = null;
 	Method _after = null;
@@ -54,13 +62,13 @@ public class ResponseCommandObject extends CommandBase implements Comparable<Res
 		if(xcmd.action!=null)
 			m.setAction(xcmd.action);
 		if(xcmd._each!=null)
-			m.setEach(xcmd._each);
+			m.setWaitingExecution(xcmd._each);
 		if(xcmd._after!=null)
-			m.setAfter(xcmd._after);
+			m.setSuccessExecution(xcmd._after);
 		if(xcmd._finally!=null)
-			m.setFinally(xcmd._finally);
+			m.setFinallyExecution(xcmd._finally);
 		if(xcmd._no!=null)
-			m.setNoExecuted(xcmd._no);
+			m.setFailedExecution(xcmd._no);
 		
 		/*if(m.action!=null) {
 			System.out.println("accion: "+m.action);
@@ -86,30 +94,24 @@ public class ResponseCommandObject extends CommandBase implements Comparable<Res
 	public ResponseCommandObject(String id, Method action) {
 		super(id);
 		this.action = action;
+		this.path = "*RESPONSE_COMMAND*/" + this.id;
 	}
 	public void forceId(String name) {
 		this.id=name;
 	}
-	public void setEach(Method e) {
+	public void setWaitingExecution(Method e) {
 		_each=e;
 	}
-	public void setAfter(Method a) {
+	public void setSuccessExecution(Method a) {
 		_after=a;
 	}
-	public void setNoExecuted(Method n) {
+	public void setFailedExecution(Method n) {
 		_no=n;
 	}
-	public void setFinally(Method f) {
+	public void setFinallyExecution(Method f) {
 		_finally=f;
 	}
-	public void Run(ResponseCommandPacket packet) {
-		try {
-			action.invoke(null, packet);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	public void eachRun(ResponseCommandPacket packet) {
+	public void runWaitingExecution(ResponseCommandPacket packet) {
 		if(_each==null)
 			return;
 		try {
@@ -118,7 +120,7 @@ public class ResponseCommandObject extends CommandBase implements Comparable<Res
 			e.printStackTrace();
 		}
 	}
-	public void afterRun(ResponseCommandPacket packet) {
+	public void runSuccessExecution(ResponseCommandPacket packet) {
 		if(_after==null)
 			return;
 		try {
@@ -127,7 +129,7 @@ public class ResponseCommandObject extends CommandBase implements Comparable<Res
 			e.printStackTrace();
 		}
 	}
-	public void NoRun(ResponseCommandPacket packet) {
+	public void runFailedExecution(ResponseCommandPacket packet) {
 		if(_no==null)
 			return;
 		try {
@@ -136,7 +138,7 @@ public class ResponseCommandObject extends CommandBase implements Comparable<Res
 			e.printStackTrace();
 		}
 	}
-	public void finallyRun(ResponseCommandPacket packet) {
+	public void runFinallyExecution(ResponseCommandPacket packet) {
 		if(_finally==null)
 			return;
 		try {
@@ -149,5 +151,21 @@ public class ResponseCommandObject extends CommandBase implements Comparable<Res
 	@Override
 	public int compareTo(ResponseCommandObject o) {
 		return id.compareTo(o.id);
+	}
+	@Override
+	public void execute(ReplyablePacket<?> packet) throws Exception {
+		if(packet instanceof CommandPacket) {
+			this.action.invoke(null, (CommandPacket)packet);
+		}else if(packet instanceof ResponseCommandPacket){
+			this.action.invoke(null, (ResponseCommandPacket)packet);
+		}else if(packet instanceof SlashCommandPacket){
+			this.action.invoke(null, (SlashCommandPacket)packet);
+		}else {
+			this.action.invoke(null, packet);
+		}
+	}
+	@Override
+	public ActionableType getActionableType() {
+		return ActionableType.RESPONSE_COMMAND;
 	}
 }

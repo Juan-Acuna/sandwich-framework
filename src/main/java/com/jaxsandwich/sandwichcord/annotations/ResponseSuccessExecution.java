@@ -28,10 +28,15 @@ import java.lang.annotation.Target;
  * [ES] Identifica el metodo que se ejecutará una vez que el comando de respuesta se ejecute satisfactoriamente.<br>
  * [EN] Identifies the method wich will run after its response command ends it execution successfuly.
  * @author Juan Acuña
+ * @since 0.5.0
  * @version 2.0<br>
  * [ES] Requiere ser usado en una clase con la anotacion {@link ResponseCommandContainer}.<br>
  * [EN] Requires be used in a class with the annotation {@link ResponseCommandContainer}.
  */
 public @interface ResponseSuccessExecution {
+	/**
+	 * [ES] Nombre del comando de respuesta al que referencia este {@link ResponseSuccessExecution}.<br>
+	 * [EN] Name of the response command referenced by this {@link ResponseSuccessExecution}.
+	 */
 	String name();
 }

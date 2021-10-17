@@ -28,10 +28,15 @@ import java.lang.annotation.Target;
  * [ES] Identifica el metodo que se ejecutara cuando el ciclo de vida de su comando de respuesta finalice.<br>
  * [EN] Identifies the method wich will run when its response command life cycle ends.
  * @author Juan Acuña
+ * @since 0.5.0
  * @version 2.0<br>
  * [ES] Requiere ser usado en una clase con la anotacion {@link ResponseCommandContainer}.<br>
  * [EN] Requires be used in a class with the annotation {@link ResponseCommandContainer}.
  */
 public @interface ResponseFinallyExecution {
+	/**
+	 * [ES] Nombre del comando de respuesta al que referencia este {@link ResponseFinallyExecution}.<br>
+	 * [EN] Name of the response command referenced by this {@link ResponseFinallyExecution}.
+	 */
 	String name();
 }

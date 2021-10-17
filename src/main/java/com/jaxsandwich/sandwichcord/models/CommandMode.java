@@ -14,34 +14,16 @@
  * limitations under the License.                                              *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-package com.jaxsandwich.sandwichcord.core;
+package com.jaxsandwich.sandwichcord.models;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.jaxsandwich.sandwichcord.development.InDevelopment;
-import com.jaxsandwich.sandwichcord.development.NotDocumented;
-
-import net.dv8tion.jda.api.interactions.components.Button;
-
-@NotDocumented
-@InDevelopment
-public class ComponentManager {
-	@NotDocumented
-	private Map<Long, Map<String, Button>> cont;
-	@NotDocumented
-	private Bot bot;
-	@NotDocumented
-	private ComponentManager(Bot bot) {
-		this.bot=bot;
-		this.cont = Collections.synchronizedMap(new HashMap<Long, Map<String, Button>>());
-	}
-	@NotDocumented
-	protected ComponentManager startService(Bot bot) {
-		return new ComponentManager(bot);
-	}
-	public Button registerButton(Button button) {
-		return button;
-	}
+/**
+ * @author Juan Acuña
+ * @version 1.0
+ * @since 0.9.0
+ */
+public enum CommandMode {
+	UNSET,
+	CLASIC_COMMAND_ONLY,
+	SLASH_COMMAND_ONLY,
+	CLASIC_AND_SLASH_COMMAND,
 }

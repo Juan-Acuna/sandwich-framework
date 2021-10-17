@@ -14,19 +14,19 @@
  * limitations under the License.                                              *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-package com.jaxsandwich.sandwichcord.models;
+package com.jaxsandwich.sandwichcord.models.packets;
 
 import com.jaxsandwich.sandwichcord.core.Bot;
 import com.jaxsandwich.sandwichcord.development.*;
-import com.jaxsandwich.sandwichcord.models.discord.GuildConfig;
+import com.jaxsandwich.sandwichcord.models.OptionInput;
 
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 /**
  * [ES] Paquete con todo el contenido necesario para un comando de respuesta.<br>
  * [EN] Packet with all the required content for a response command.
  * @author Juan Acuña
  * @version 1.1
+ * @since 0.6.0
  */
 public class ResponseCommandPacket extends CommandPacket{
 	/**
@@ -68,8 +68,8 @@ public class ResponseCommandPacket extends CommandPacket{
 	 * [ES] Constructor de ResponseCommandPacket.<br>
 	 * [EN] Constructor of ResponseCommandPacket.
 	 */
-	public ResponseCommandPacket(Bot bot, GuildConfig config, MessageReceivedEvent event, boolean isAuthorOnly, Object...args) {
-		super(bot, config, event);
+	public ResponseCommandPacket(Bot bot, OptionInput[] options, MessageReceivedEvent event, boolean isAuthorOnly, String commandPath, Object...args) {
+		super(bot, options, event, commandPath);
 		this.args=args;
 		this.authorOnly=isAuthorOnly;
 	}
@@ -82,7 +82,7 @@ public class ResponseCommandPacket extends CommandPacket{
 	}
 	/**
 	 * [ES] Devuelve los argumentos pasados al momento de llamar este comando.<br>
-	 * [EN] ...?
+	 * [EN] *NOT TRANSLATED YET*?
 	 */
 	@HalfDocumented
 	public Object[] getArgs() {
@@ -92,28 +92,28 @@ public class ResponseCommandPacket extends CommandPacket{
 	 * [ES] Devuelve los argumentos para la ejecucion del ciclo de espera.<br>
 	 * [EN] Returns the arguments for the waiting cycle execution.
 	 */
-	public Object[] getEachArgs() {
+	public Object[] getWaitinExecutionArgs() {
 		return eachArgs;
 	}
 	/**
 	 * [ES] Devuelve los argumentos para la ejecución cuando el comando termino su ejecución exitosamente.<br>
 	 * [EN] Returns the arguments for the execution when the command ended its execution succesfully.
 	 */
-	public Object[] getAfterArgs() {
+	public Object[] getSuccessExecutionArgs() {
 		return afterArgs;
 	}
 	/**
 	 * [ES] Devuelve los argumentos para la ejecucion cuando el comando no fue ejecutado exitosamente.<br>
 	 * [EN] Returns the arguments for the execution when the command did not end its execution succesfully.
 	 */
-	public Object[] getNoArgs() {
+	public Object[] getFailedExecutionArgs() {
 		return noArgs;
 	}
 	/**
 	 * [ES] Devuelve los argumentos para la ejecucion cuando el ciclo de espera termina.<br>
 	 * [EN] Returns the arguments for the execution when the waiting cycle ends.
 	 */
-	public Object[] getFinallyArgs() {
+	public Object[] getFinallyExecutionArgs() {
 		return finallyArgs;
 	}
 }

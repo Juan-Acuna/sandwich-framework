@@ -29,8 +29,16 @@ import java.lang.annotation.Target;
  * [EN] Identifies the Command to configure.
  * @author Juan Acuña
  * @version 1.1
+ * @since 0.3.0
+ * @deprecated <br>
+ * [ES] En su lugar, use {@link com.jaxsandwich.sandwichcord.core.LanguageConfiguration}.<br>
+ * [EN] Instead, use {@link com.jaxsandwich.sandwichcord.core.LanguageConfiguration}.
  */
 @Deprecated
 public @interface CommandID {
+	/**
+	 * [ES] Identificador del comando.<br>
+	 * [EN] Identifier of command.
+	 */
 	String value();
 }

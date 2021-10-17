@@ -17,9 +17,10 @@
 package com.jaxsandwich.sandwichcord.core.util;
 /**
  * [ES] Idiomas soportados por el framework.<br>
- * [EN] Framework supported languages.
+ * [EN] Framework supported languages.<br>
  * @author Juancho
  * @version 0.6
+ * @since 0.3.0
  */
 public enum Language {
 	/***********************************/
@@ -45,8 +46,8 @@ public enum Language {
 	/* ES-ES 	  ESPAÑOL-ESPAÑA 	   */
 	/* EN-US 	  ENGLISH-U.S. 	       */
 	/* EN-GB 	  ENGLISH-BRITAIN 	   */
-	/* PT-BR       PORTUGUÊS-BRASIL    */
-	/* PT-PT       PORTUGUÊS-PORTUGAL  */
+	/* PT-BR      PORTUGUÊS-BRASIL     */
+	/* PT-PT      PORTUGUÊS-PORTUGAL   */
 	/***********************************/
 	
 	/**
