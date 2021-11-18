@@ -18,7 +18,7 @@
  
 [framework]:http://sandwichcord.jaxsandwich.com/
 [actual]:http://docs.jaxsandwich.com/sandwichcord/latest
-[estable]:http://docs.jaxsandwich.com/sandwichcord/v0.8.x/javadoc/
+[estable]:http://docs.jaxsandwich.com/sandwichcord/v0.9.x/javadoc/
 [web-jax]:http://jaxsandwich.com/
 [jda-github]:https://github.com/DV8FromTheWorld/JDA
 [jda]:https://ci.dv8tion.net/job/JDA/javadoc/
@@ -63,8 +63,8 @@ Este framework contiene lo necesario para desarrollar un bot básico pero útil,
 ###### **Actualmente solo cuenta con soporte para inglés y español*
 
 ## Instalación  
-###### Versión estable: [0.8.1][estable](BETA)  
-###### Versión más reciente: [0.9.0-r02][actual](BETA)  
+###### Versión estable: [0.9.0][estable](BETA)  
+<!--###### Versión más reciente: [0.9.0][actual](BETA)-->  
 ### Importando en Maven  
 Actualmente no cuenta con soporte a Maven, por lo que si lo utilizas, tendrás que realizar una importación local del archivo `sandwichcord-framework-VERSION.jar` siguiendo las [instucciones para importar archivos .jar en proyecto Maven][maven](en inglés).  
 
