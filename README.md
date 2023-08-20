@@ -52,7 +52,7 @@
 > ## AVISO
 > Tanto el framework como la documentación estan aún en desarrollo y podrían variar en su contenido, contener bugs no reportados, o encontrarse incompleta en el caso de la documentación. Por favor tener esto en consideración al momento de su uso.
 
-# [Sandwichcord Framework][framework]
+# [Sandwichcord Framework][framework] [Proyecto descontinuado]
 ### Un framework simple en Java 8 para el desarrollo de bots para Discord.
 
 Si eres nuevo en el desarrollo de bots para Discord, puede que esto te interese.  
